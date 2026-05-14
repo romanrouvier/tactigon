@@ -6,11 +6,10 @@
   min-height: 100svh;
   position: relative;
   overflow: hidden;
-  /* Full-bleed background */
   background: url('/battle-map.jpg') center / cover no-repeat;
 }
 
-/* Left-to-right dark gradient so text is legible while image shows on the right */
+/* Left gradient — keeps left readable, shows scene on the right */
 .container::before {
   content: '';
   position: absolute;
@@ -28,14 +27,14 @@
   z-index: 0;
 }
 
-/* Subtle vignette on top & bottom edges */
+/* Vignette top & bottom */
 .container::after {
   content: '';
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(to bottom, rgba(5,3,4,0.55) 0%, transparent 18%),
-    linear-gradient(to top,   rgba(5,3,4,0.70) 0%, transparent 14%);
+    linear-gradient(to bottom, rgba(5,3,4,0.55) 0%, transparent 16%),
+    linear-gradient(to top,   rgba(5,3,4,0.72) 0%, transparent 14%);
   pointer-events: none;
   z-index: 0;
 }
@@ -49,7 +48,6 @@
   display: flex;
   align-items: center;
   gap: 0.65rem;
-  text-decoration: none;
 }
 
 .logoMark {
@@ -75,27 +73,34 @@
   position: absolute;
   left: 3rem;
   top: 50%;
-  transform: translateY(-58%);
+  transform: translateY(-52%);
   z-index: 1;
   display: flex;
   flex-direction: column;
-  gap: 0.15rem;
+  gap: 0;
 }
 
+/* ── Top-level nav item ─────────────────────────────────────────────────────── */
 .navItem {
   display: flex;
   align-items: center;
-  gap: 0.9rem;
+  gap: 0.85rem;
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0.55rem 0;
+  padding: 0.48rem 0;
   text-align: left;
   transition: transform 180ms var(--ease-out);
+  width: 100%;
 }
 
-.navItem:hover {
+.navItem:not(:disabled):hover {
   transform: translateX(6px);
+}
+
+.navItem:disabled {
+  cursor: default;
+  opacity: 0.38;
 }
 
 .navItem:focus-visible {
@@ -105,47 +110,183 @@
 }
 
 .navGlyph {
-  font-size: 0.7rem;
+  font-size: 0.62rem;
   color: var(--gold);
-  opacity: 0.55;
+  opacity: 0.5;
   transition: opacity 180ms, color 180ms;
   flex-shrink: 0;
   line-height: 1;
+  width: 14px;
 }
 
-.navItem:hover .navGlyph {
+.navItem:not(:disabled):hover .navGlyph,
+.navItemActive .navGlyph {
   opacity: 1;
   color: var(--gold-bright);
 }
 
-.navContent {
-  display: flex;
-  flex-direction: column;
-  gap: 0.1rem;
-}
-
 .navLabel {
   font-family: var(--font-heading);
-  font-size: 1rem;
+  font-size: 0.92rem;
   font-weight: 500;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: rgba(232, 224, 208, 0.75);
+  color: rgba(232, 224, 208, 0.70);
   transition: color 180ms;
+  flex: 1;
   line-height: 1.1;
 }
 
-.navItem:hover .navLabel {
+.navItem:not(:disabled):hover .navLabel,
+.navItemActive .navLabel {
   color: var(--text-parchment);
 }
 
-.navSub {
-  font-family: var(--font-body);
-  font-size: 0.6rem;
-  letter-spacing: 0.08em;
+/* Arrow chevron */
+.navArrow {
+  font-size: 1rem;
+  color: var(--gold);
+  opacity: 0.4;
+  transition: transform 200ms var(--ease-out), opacity 180ms;
+  line-height: 1;
+  padding-right: 0.1rem;
+}
+
+.navArrowOpen {
+  transform: rotate(90deg);
+  opacity: 0.85;
+}
+
+/* Bientôt badge */
+.soon {
+  font-family: var(--font-heading);
+  font-size: 0.46rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
   color: var(--text-faint);
-  font-style: italic;
-  font-weight: 300;
+  border: 1px solid var(--border-subtle);
+  padding: 0.15rem 0.4rem;
+  opacity: 0.7;
+}
+
+/* ── Sub-menu (player count level) ─────────────────────────────────────────── */
+.subGroup {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 280ms var(--ease-out);
+  padding-left: 1.6rem;
+}
+
+.subGroupOpen {
+  max-height: 260px; /* large enough for all sub-items */
+}
+
+.subItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.38rem 0;
+  text-align: left;
+  width: 100%;
+  transition: transform 160ms var(--ease-out);
+}
+
+.subItem:hover {
+  transform: translateX(5px);
+}
+
+.subItem:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+.subGlyph {
+  font-size: 0.55rem;
+  color: var(--gold-dim);
+  opacity: 0.5;
+  width: 12px;
+  flex-shrink: 0;
+  letter-spacing: -0.05em;
+}
+
+.subLabel {
+  font-family: var(--font-heading);
+  font-size: 0.78rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(232, 224, 208, 0.55);
+  transition: color 160ms;
+  flex: 1;
+}
+
+.subItem:hover .subLabel,
+.subItemActive .subLabel {
+  color: rgba(232, 224, 208, 0.88);
+}
+
+.subItem:hover .subGlyph,
+.subItemActive .subGlyph {
+  opacity: 1;
+}
+
+/* ── Leaf items (normal / classé) ───────────────────────────────────────────── */
+.leafGroup {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 220ms var(--ease-out);
+  padding-left: 1.35rem;
+}
+
+.leafGroupOpen {
+  max-height: 100px;
+}
+
+.leafItem {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.3rem 0;
+  font-family: var(--font-heading);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(232, 224, 208, 0.45);
+  transition: color 150ms, transform 150ms;
+  text-align: left;
+  width: 100%;
+}
+
+.leafItem:hover {
+  color: var(--gold);
+  transform: translateX(4px);
+}
+
+.leafItem:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+.leafDot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--gold-dim);
+  flex-shrink: 0;
+  opacity: 0.5;
+  transition: opacity 150ms, background 150ms;
+}
+
+.leafItem:hover .leafDot {
+  opacity: 1;
+  background: var(--gold);
 }
 
 /* ── Bottom dock ────────────────────────────────────────────────────────────── */
@@ -191,11 +332,7 @@
   border: 1px solid rgba(232, 224, 208, 0.12);
   color: rgba(232, 224, 208, 0.45);
   cursor: pointer;
-  transition:
-    background 180ms,
-    border-color 180ms,
-    color 180ms,
-    box-shadow 180ms;
+  transition: background 180ms, border-color 180ms, color 180ms, box-shadow 180ms;
 }
 
 .dockBtn svg {
