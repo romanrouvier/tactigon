@@ -6,8 +6,8 @@
  * Player 1 starts near the camera (high Z); Player 2 is far (low Z).
  */
 import { Canvas, useFrame } from '@react-three/fiber';
-import { Component, Suspense, useMemo, useRef, type ReactNode } from 'react';
-import { OrbitControls, useGLTF } from '@react-three/drei';
+import { Component, useMemo, useRef, type ReactNode } from 'react';
+import { OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
 import type { BoardState, Faction, FactionPiecePattern, Move, Piece } from '../game/types';
 
@@ -166,51 +166,11 @@ function KingGeom({ mat, matGlow }: {
   );
 }
 
-// ─── GLB character loader ─────────────────────────────────────────────────────
-function GLBPiece({ glbUrl, mat }: { glbUrl: string; mat: THREE.MeshStandardMaterial }) {
-  const { scene } = useGLTF(glbUrl);
-
-  const clone = useMemo(() => {
-    // Measure original bounding box to auto-scale the model to ~0.75 units tall
-    const box    = new THREE.Box3().setFromObject(scene);
-    const size   = box.getSize(new THREE.Vector3());
-    const maxSide = Math.max(size.x, size.y, size.z);
-    const scale   = maxSide > 0 ? 0.75 / maxSide : 0.3;
-
-    const cloned = scene.clone(true);
-    cloned.scale.setScalar(scale);
-
-    // Sit the base on Y = 0 and center horizontally
-    const box2   = new THREE.Box3().setFromObject(cloned);
-    const center = box2.getCenter(new THREE.Vector3());
-    cloned.position.set(-center.x, -box2.min.y, -center.z);
-
-    // Apply faction colour material to every mesh in the model
-    cloned.traverse(obj => {
-      if ((obj as THREE.Mesh).isMesh) {
-        (obj as THREE.Mesh).material = mat;
-      }
-    });
-
-    return cloned;
-  }, [scene, mat]);
-
-  return <primitive object={clone} />;
-}
-
-function PieceShapes({ type, mat, matGlow, glbUrl }: {
+function PieceShapes({ type, mat, matGlow }: {
   type: string;
   mat: THREE.MeshStandardMaterial;
   matGlow: THREE.MeshStandardMaterial;
-  glbUrl?: string;
 }) {
-  if (glbUrl) {
-    return (
-      <Suspense fallback={<KingGeom mat={mat} matGlow={matGlow} />}>
-        <GLBPiece glbUrl={glbUrl} mat={mat} />
-      </Suspense>
-    );
-  }
   switch (type) {
     case 'pawn':   return <PawnGeom mat={mat} />;
     case 'inter1': return <Inter1Geom mat={mat} />;
@@ -224,7 +184,6 @@ function PieceShapes({ type, mat, matGlow, glbUrl }: {
 function Piece3D({
   piece,
   faction,
-  factionPiece,
   isSelected,
   isCurrentPlayer,
 }: {
@@ -280,7 +239,7 @@ function Piece3D({
 
   return (
     <group ref={groupRef} position={[0, PIECE_Y, 0]}>
-      <PieceShapes type={piece.type} mat={mat} matGlow={matGlow} glbUrl={factionPiece?.glbUrl} />
+      <PieceShapes type={piece.type} mat={mat} matGlow={matGlow} />
     </group>
   );
 }
@@ -481,9 +440,6 @@ export interface Board3DProps {
   legalMoves: Move[];
   onCellClick: (x: number, y: number) => void;
 }
-
-// Kick off GLB download before the component mounts
-useGLTF.preload('/character.glb');
 
 export default function Board3D({ gameState, selectedPieceId, legalMoves, onCellClick }: Board3DProps) {
   const { cols, rows } = gameState.layout;

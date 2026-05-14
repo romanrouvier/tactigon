@@ -63,8 +63,8 @@ export interface FactionPiecePattern {
   pattern: MovementPattern;
   /** Optional image to render instead of the default SVG shape (2D board) */
   imageUrl?: string;
-  /** Optional GLB model to render in the 3D board (overrides procedural geometry) */
-  glbUrl?: string;
+  /** Optional FBX model to render in the 3D board */
+  fbxUrl?: string;
 }
 
 export interface Faction {
