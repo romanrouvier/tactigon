@@ -63,6 +63,7 @@ export const factions: Faction[] = [
       },
       {
         type: 'king',
+        fbxUrl: '/character.fbx',
         pattern: {
           targets: [
             { dx: -1, dy: -1 }, { dx: 0, dy: -1 }, { dx: 1, dy: -1 },

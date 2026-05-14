@@ -7,7 +7,7 @@ import { startTemplate } from '../data/startTemplate';
 import { setupBoard } from '../game/setupBoard';
 import { getLegalMoves } from '../game/legalMoves';
 import { applyMove } from '../game/applyMove';
-import Board from '../components/Board';
+import Board3D from '../components/Board3D';
 import styles from './Game.module.css';
 import type { BoardState, Move, PlayerId, Faction } from '../game/types';
 
@@ -117,7 +117,7 @@ export default function Game() {
       </header>
 
       <div className={styles.boardWrap}>
-        <Board
+        <Board3D
           gameState={gameState}
           selectedPieceId={selectedPieceId}
           legalMoves={legalMoves}

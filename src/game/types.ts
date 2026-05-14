@@ -61,8 +61,10 @@ export interface MovementPattern {
 export interface FactionPiecePattern {
   type: PieceType;
   pattern: MovementPattern;
-  /** Optional image to render instead of the default SVG shape */
+  /** Optional image to render instead of the default SVG shape (2D board) */
   imageUrl?: string;
+  /** Optional FBX model to render in the 3D board */
+  fbxUrl?: string;
 }
 
 export interface Faction {
