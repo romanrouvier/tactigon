@@ -18,6 +18,7 @@ export default function MainMenu() {
 
   return (
     <div className={styles.container}>
+      <div className={styles.panel}>
 
       {/* ── Logo ─────────────────────────────────────────────────── */}
       <header className={styles.logo}>
@@ -146,6 +147,7 @@ export default function MainMenu() {
         </div>
       </footer>
 
+      </div>
     </div>
   );
 }
