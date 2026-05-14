@@ -1,0 +1,203 @@
+.container {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background:
+    linear-gradient(rgba(5,3,4,0.70), rgba(5,3,4,0.75)),
+    url('/battle-map.jpg') center / cover no-repeat fixed;
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+.header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.5rem;
+  border-bottom: 1px solid var(--border-subtle);
+  background: rgba(5, 3, 4, 0.85);
+  backdrop-filter: blur(8px);
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.quit {
+  font-family: var(--font-heading);
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  cursor: pointer;
+  min-height: 44px;
+  min-width: 44px;
+  display: flex;
+  align-items: center;
+  transition: color 180ms;
+}
+.quit:hover { color: var(--red-bright); }
+
+.turn {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-heading);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-parchment);
+}
+
+.turnDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  box-shadow: 0 0 8px currentColor;
+  flex-shrink: 0;
+}
+
+.winner {
+  font-family: var(--font-heading);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  text-shadow: 0 0 20px currentColor;
+}
+
+.playerCount {
+  display: flex;
+  gap: 4px;
+  margin-left: 0.5rem;
+  align-items: center;
+}
+
+.pip {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  opacity: 0.35;
+  transition: opacity 200ms, transform 200ms;
+}
+
+.pipActive {
+  opacity: 1;
+  transform: scale(1.5);
+  box-shadow: 0 0 6px currentColor;
+}
+
+.eliminated {
+  display: flex;
+  gap: 0.5rem;
+  font-family: var(--font-heading);
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+}
+
+.dead {
+  opacity: 0.4;
+  text-decoration: line-through;
+}
+
+/* ── Board area ──────────────────────────────────────────────────────────── */
+.boardWrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+/* ── Victory overlay ─────────────────────────────────────────────────────── */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 3, 4, 0.82);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  backdrop-filter: blur(6px);
+}
+
+.modal {
+  background: var(--bg-card);
+  border: 1px solid var(--border-mid);
+  padding: 3rem 2.5rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  min-width: 320px;
+  position: relative;
+  box-shadow: var(--shadow-glow), var(--shadow-card);
+}
+
+/* Gold corner accents on modal */
+.modal::before,
+.modal::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-color: var(--gold-dim);
+  border-style: solid;
+}
+.modal::before { top: -1px; left: -1px; border-width: 2px 0 0 2px; }
+.modal::after  { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; }
+
+.modal h2 {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-shadow: 0 0 20px currentColor;
+}
+
+.modal p {
+  font-family: var(--font-body);
+  color: var(--text-muted);
+  font-style: italic;
+  font-size: 1rem;
+  font-weight: 300;
+}
+
+.btnPlay {
+  width: 100%;
+  padding: 0.85rem 2rem;
+  font-family: var(--font-heading);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold);
+  background: transparent;
+  border: 1px solid rgba(201, 168, 76, 0.30);
+  cursor: pointer;
+  min-height: 48px;
+  transition:
+    border-color 200ms var(--ease-out),
+    color 200ms var(--ease-out),
+    box-shadow 200ms var(--ease-out);
+}
+
+.btnPlay:hover {
+  color: var(--gold-bright);
+  border-color: var(--gold);
+  box-shadow: 0 0 20px rgba(201,168,76,0.15);
+}
+
+.btnMenu {
+  background: transparent;
+  border: none;
+  font-family: var(--font-heading);
+  font-size: 0.58rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  cursor: pointer;
+  min-height: 44px;
+  transition: color 180ms;
+}
+.btnMenu:hover { color: var(--text-muted); }

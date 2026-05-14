@@ -1,0 +1,106 @@
+/* ── Google Fonts ─────────────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;900&family=Cinzel+Decorative:wght@400;700;900&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap');
+
+/* ── Design Tokens ────────────────────────────────────────────────────────── */
+:root {
+  /* surfaces */
+  --bg-void:    #050304;
+  --bg-deep:    #0a0807;
+  --bg-surface: #110e0c;
+  --bg-card:    #181412;
+  --bg-raised:  #1f1b18;
+
+  /* gold palette */
+  --gold:        #c9a84c;
+  --gold-bright: #e0c060;
+  --gold-dim:    #8a6a30;
+  --gold-glow:   rgba(201, 168, 76, 0.25);
+  --gold-border: rgba(201, 168, 76, 0.18);
+
+  /* text */
+  --text-parchment: #e8dfc8;
+  --text-muted:     #8a7a68;
+  --text-faint:     #504540;
+
+  /* accents */
+  --red-blood:  #8b1a1a;
+  --red-bright: #c0302e;
+  --green-safe: rgba(90, 200, 80, 0.22);
+  --red-danger: rgba(200, 60, 40, 0.28);
+
+  /* borders */
+  --border-subtle: rgba(201, 168, 76, 0.10);
+  --border-mid:    rgba(201, 168, 76, 0.22);
+  --border-strong: rgba(201, 168, 76, 0.50);
+
+  /* fonts */
+  --font-display: 'Cinzel Decorative', 'Palatino Linotype', serif;
+  --font-heading: 'Cinzel', 'Palatino Linotype', serif;
+  --font-body:    'Crimson Pro', 'Georgia', serif;
+
+  /* shadows */
+  --shadow-card: 0 4px 24px rgba(0,0,0,0.6), 0 1px 4px rgba(0,0,0,0.4);
+  --shadow-glow: 0 0 30px var(--gold-glow), 0 0 60px rgba(201,168,76,0.08);
+
+  /* easing */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ── Reset ────────────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  background: var(--bg-void);
+  color: var(--text-parchment);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+#root {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  text-align: left;
+  border: none;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+}
+
+a { color: inherit; text-decoration: none; }
+
+button {
+  cursor: pointer;
+  border: none;
+  font-family: var(--font-heading);
+  background: transparent;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-heading);
+  color: var(--text-parchment);
+  font-weight: 600;
+}
+
+/* ── Scrollbar ────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg-deep); }
+::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 2px; }
+
+/* ── Reduced motion ───────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

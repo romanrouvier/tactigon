@@ -1,0 +1,73 @@
+.cell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(0,0,0,0.4);
+  transition: background 120ms;
+  cursor: pointer;
+}
+
+/* Checkerboard — warm dark tones */
+.light { background: #161210; }
+.dark  { background: #0f0d0b; }
+
+/* Walls — hatched pattern */
+.wall {
+  background: #080605;
+  cursor: default;
+  border-color: rgba(0,0,0,0.6);
+}
+.wall::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 3px,
+    rgba(201, 168, 76, 0.04) 3px,
+    rgba(201, 168, 76, 0.04) 6px
+  );
+}
+
+/* Legal move — subtle green overlay + dot */
+.legal {
+  background: rgba(80, 160, 60, 0.14);
+}
+.legal::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(80, 180, 60, 0.08);
+  pointer-events: none;
+}
+.legal::after {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(100, 210, 80, 0.55);
+  box-shadow: 0 0 6px rgba(100, 210, 80, 0.4);
+}
+
+/* Capture target — blood red overlay */
+.capture {
+  background: rgba(160, 40, 30, 0.20);
+}
+.capture::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(200, 50, 35, 0.15);
+  pointer-events: none;
+}
+.capture::after { display: none; }
+
+/* Hover feedback for interactive cells */
+.cell:not(.wall):hover {
+  background: rgba(201, 168, 76, 0.07);
+}
+.legal:hover  { background: rgba(80, 160, 60, 0.22); }
+.capture:hover { background: rgba(160, 40, 30, 0.30); }

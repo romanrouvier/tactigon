@@ -1,0 +1,172 @@
+.container {
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(5, 3, 4, 0.55) 0%,
+      rgba(5, 3, 4, 0.70) 50%,
+      rgba(5, 3, 4, 0.88) 100%
+    ),
+    url('/battle-map.jpg') center / cover no-repeat fixed;
+}
+
+/* Vignette around edges */
+.container::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 30%,
+    rgba(5, 3, 4, 0.7) 100%
+  );
+  pointer-events: none;
+}
+
+/* Horizontal ornament lines */
+.container::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--gold-border),
+    var(--gold),
+    var(--gold-border),
+    transparent
+  );
+}
+
+.inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.75rem;
+  padding: 2rem;
+  max-width: 640px;
+}
+
+.eyebrow {
+  font-family: var(--font-heading);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.45em;
+  text-transform: uppercase;
+  color: var(--gold);
+  opacity: 0.8;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 9vw, 6.5rem);
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-parchment);
+  line-height: 1;
+  text-shadow:
+    0 0 40px rgba(201, 168, 76, 0.6),
+    0 0 80px rgba(201, 168, 76, 0.25),
+    0 4px 20px rgba(0,0,0,0.9);
+}
+
+/* Ornamental divider */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 280px;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-dim));
+}
+
+.divider::after {
+  background: linear-gradient(90deg, var(--gold-dim), transparent);
+}
+
+.dividerDiamond {
+  width: 6px;
+  height: 6px;
+  background: var(--gold);
+  transform: rotate(45deg);
+  flex-shrink: 0;
+}
+
+.lore {
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  font-style: italic;
+  color: var(--text-muted);
+  max-width: 380px;
+  line-height: 1.7;
+  font-weight: 300;
+}
+
+.cta {
+  margin-top: 0.5rem;
+  padding: 0.85rem 2.5rem;
+  font-family: var(--font-heading);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--gold);
+  border: 1px solid var(--gold-dim);
+  background: rgba(10, 8, 7, 0.6);
+  position: relative;
+  transition:
+    color 200ms var(--ease-out),
+    border-color 200ms var(--ease-out),
+    box-shadow 200ms var(--ease-out),
+    background 200ms var(--ease-out);
+  cursor: pointer;
+  min-height: 48px;
+}
+
+.cta::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  background: linear-gradient(135deg, var(--gold-dim), transparent, var(--gold-dim));
+  opacity: 0;
+  transition: opacity 200ms;
+}
+
+.cta:hover {
+  color: var(--text-parchment);
+  border-color: var(--gold);
+  box-shadow: 0 0 20px var(--gold-glow), inset 0 0 20px rgba(201,168,76,0.06);
+  background: rgba(201, 168, 76, 0.08);
+}
+
+.cta:hover::before {
+  opacity: 1;
+}
+
+.cta:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 4px;
+}
+
+.cta span {
+  position: relative;
+  z-index: 1;
+}
