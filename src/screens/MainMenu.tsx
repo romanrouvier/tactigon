@@ -12,15 +12,23 @@ interface CardDef {
   action?: () => void;
 }
 
+type PlayStep = 'idle' | 'mode' | 'rank';
+
 export default function MainMenu() {
   const navigate = useNavigate();
-  const [index, setIndex]       = useState(0);
+
+  // ── Carousel state ───────────────────────────────────────
+  const [index, setIndex]           = useState(0);
   const [dragOffset, setDragOffset] = useState(0);
-  const [dragging, setDragging] = useState(false);
+  const [dragging, setDragging]     = useState(false);
 
   const dragStartX   = useRef<number | null>(null);
   const dragStartIdx = useRef(0);
   const didDrag      = useRef(false);
+
+  // ── Play flow state ──────────────────────────────────────
+  const [playStep, setPlayStep] = useState<PlayStep>('idle');
+  const [playMode, setPlayMode] = useState<'2' | '4'>('2');
 
   const cards: CardDef[] = [
     {
@@ -51,6 +59,7 @@ export default function MainMenu() {
     setDragOffset(0);
   }
 
+  // ── Pointer handlers ─────────────────────────────────────
   function onPointerDown(e: React.PointerEvent) {
     dragStartX.current   = e.clientX;
     dragStartIdx.current = index;
@@ -69,21 +78,31 @@ export default function MainMenu() {
   function onPointerUp(e: React.PointerEvent) {
     if (dragStartX.current === null) return;
     const delta = e.clientX - dragStartX.current;
-    if (didDrag.current) {
-      if (delta < -(CARD_W * 0.25))      go(dragStartIdx.current + 1);
-      else if (delta > (CARD_W * 0.25))  go(dragStartIdx.current - 1);
-      else                               go(dragStartIdx.current);
+
+    if (!didDrag.current) {
+      // It was a tap — find which card sits under the pointer
+      const el      = document.elementFromPoint(e.clientX, e.clientY);
+      const cardEl  = el?.closest('[data-cardidx]');
+      const cardIdx = cardEl ? parseInt(cardEl.getAttribute('data-cardidx')!) : -1;
+
+      if (cardIdx >= 0 && cardIdx < cards.length) {
+        if (cardIdx !== index) {
+          go(cardIdx);
+        } else {
+          const card = cards[cardIdx];
+          if (card.available && card.action) card.action();
+        }
+      }
+    } else {
+      // It was a drag — commit swipe
+      if (delta < -(CARD_W * 0.25))     go(dragStartIdx.current + 1);
+      else if (delta > (CARD_W * 0.25)) go(dragStartIdx.current - 1);
+      else                              go(dragStartIdx.current);
     }
+
     dragStartX.current = null;
     setDragOffset(0);
     setDragging(false);
-  }
-
-  function onCardClick(i: number) {
-    if (didDrag.current) return;
-    if (i !== index) { go(i); return; }
-    const card = cards[i];
-    if (card.available && card.action) card.action();
   }
 
   const trackX = -(index * (CARD_W + GAP)) + dragOffset;
@@ -91,7 +110,7 @@ export default function MainMenu() {
   return (
     <div className={styles.container}>
 
-      {/* ── Logo ─────────────────────────────────────────────── */}
+      {/* ── Logo ───────────────────────────────────────────── */}
       <header className={styles.logo}>
         <svg className={styles.logoMark} viewBox="0 0 32 32" fill="none" aria-hidden>
           <polygon points="16,2 30,10 30,22 16,30 2,22 2,10" stroke="currentColor" strokeWidth="1.5" fill="none"/>
@@ -101,7 +120,7 @@ export default function MainMenu() {
         <span className={styles.logoWord}>TACTIGON</span>
       </header>
 
-      {/* ── Carousel ─────────────────────────────────────────── */}
+      {/* ── Carousel ───────────────────────────────────────── */}
       <div
         className={styles.carousel}
         onPointerDown={onPointerDown}
@@ -117,35 +136,25 @@ export default function MainMenu() {
             transition: dragging ? 'none' : 'transform 320ms cubic-bezier(0.25, 0.46, 0.45, 0.94)',
           }}
         >
-          {cards.map((card, i) => {
-            const active = i === index;
-            return (
-              <div
-                key={i}
-                className={`${styles.card} ${active ? styles.cardActive : styles.cardInactive}`}
-                style={{ width: CARD_W }}
-                onClick={() => onCardClick(i)}
-              >
-                {/* Corner accents */}
-                <span className={styles.cornerTL} aria-hidden />
-                <span className={styles.cornerBR} aria-hidden />
-
-                <p className={styles.cardLabel}>{card.label}</p>
-                <p className={styles.cardSub}>{card.sub}</p>
-
-                {!card.available && (
-                  <span className={styles.cardSoon}>Bientôt</span>
-                )}
-                {card.available && active && (
-                  <span className={styles.cardCta}>Explorer →</span>
-                )}
-              </div>
-            );
-          })}
+          {cards.map((card, i) => (
+            <div
+              key={i}
+              data-cardidx={i}
+              className={`${styles.card} ${i === index ? styles.cardActive : styles.cardInactive}`}
+              style={{ width: CARD_W }}
+            >
+              <span className={styles.cornerTL} aria-hidden />
+              <span className={styles.cornerBR} aria-hidden />
+              <p className={styles.cardLabel}>{card.label}</p>
+              <p className={styles.cardSub}>{card.sub}</p>
+              {!card.available && <span className={styles.cardSoon}>Bientôt</span>}
+              {card.available && i === index && <span className={styles.cardCta}>Explorer →</span>}
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* ── Dots ─────────────────────────────────────────────── */}
+      {/* ── Dots ───────────────────────────────────────────── */}
       <div className={styles.dots} role="tablist" aria-label="Navigation">
         {cards.map((_, i) => (
           <button
@@ -159,16 +168,66 @@ export default function MainMenu() {
         ))}
       </div>
 
-      {/* ── Play frame ───────────────────────────────────────── */}
+      {/* ── Play frame ─────────────────────────────────────── */}
       <div className={styles.playFrame}>
         <span className={styles.playCornerTL} aria-hidden />
         <span className={styles.playCornerBR} aria-hidden />
-        <button className={styles.playBtn} onClick={() => navigate('/mode?players=2')}>
-          <svg className={styles.playIcon} viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-            <polygon points="5,3 21,12 5,21"/>
-          </svg>
-          JOUER
-        </button>
+
+        {/* Step 1 — JOUER */}
+        {playStep === 'idle' && (
+          <button className={styles.playBtn} onClick={() => setPlayStep('mode')}>
+            <svg className={styles.playIcon} viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+              <polygon points="5,3 21,12 5,21"/>
+            </svg>
+            JOUER
+          </button>
+        )}
+
+        {/* Step 2 — Choose mode */}
+        {playStep === 'mode' && (
+          <div className={styles.playMenu}>
+            <button className={styles.playBack} onClick={() => setPlayStep('idle')}>
+              ← Retour
+            </button>
+            <div className={styles.playOptions}>
+              <button
+                className={styles.playOption}
+                onClick={() => { setPlayMode('2'); setPlayStep('rank'); }}
+              >
+                Duel 1v1
+              </button>
+              <button
+                className={styles.playOption}
+                onClick={() => { setPlayMode('4'); setPlayStep('rank'); }}
+              >
+                1v1v1v1 Choc
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Step 3 — Choose ranked */}
+        {playStep === 'rank' && (
+          <div className={styles.playMenu}>
+            <button className={styles.playBack} onClick={() => setPlayStep('mode')}>
+              ← Retour
+            </button>
+            <div className={styles.playOptions}>
+              <button
+                className={styles.playOption}
+                onClick={() => navigate(`/clan?players=${playMode}`)}
+              >
+                Normal
+              </button>
+              <button
+                className={styles.playOption}
+                onClick={() => navigate(`/ranked?players=${playMode}`)}
+              >
+                Classé
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
     </div>
