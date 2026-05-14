@@ -1,26 +1,97 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './MainMenu.module.css';
 
+const CARD_W = 280;
+const GAP    = 20;
+
+interface CardDef {
+  label: string;
+  sub: string;
+  available: boolean;
+  action?: () => void;
+}
+
 export default function MainMenu() {
   const navigate = useNavigate();
-  const [playOpen, setPlayOpen]   = useState(false);
-  const [modeOpen, setModeOpen]   = useState<null | '2' | '4'>(null);
+  const [index, setIndex]       = useState(0);
+  const [dragOffset, setDragOffset] = useState(0);
+  const [dragging, setDragging] = useState(false);
 
-  function togglePlay() {
-    setPlayOpen(v => !v);
-    setModeOpen(null);
+  const dragStartX   = useRef<number | null>(null);
+  const dragStartIdx = useRef(0);
+  const didDrag      = useRef(false);
+
+  const cards: CardDef[] = [
+    {
+      label:     'DÉCOUVRIR LES FACTIONS',
+      sub:       'Explorer les 4 factions et leurs pièces',
+      available: true,
+      action:    () => navigate('/factions'),
+    },
+    {
+      label:     'PERSONNALISER',
+      sub:       'Modifier l\'apparence de vos factions',
+      available: false,
+    },
+    {
+      label:     'CLASSEMENT',
+      sub:       'Voir les meilleurs joueurs',
+      available: false,
+    },
+    {
+      label:     'PARAMÈTRES',
+      sub:       'Configurer le jeu',
+      available: false,
+    },
+  ];
+
+  function go(i: number) {
+    setIndex(Math.max(0, Math.min(i, cards.length - 1)));
+    setDragOffset(0);
   }
 
-  function toggleMode(m: '2' | '4') {
-    setModeOpen(prev => prev === m ? null : m);
+  function onPointerDown(e: React.PointerEvent) {
+    dragStartX.current   = e.clientX;
+    dragStartIdx.current = index;
+    didDrag.current      = false;
+    setDragging(true);
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
   }
+
+  function onPointerMove(e: React.PointerEvent) {
+    if (dragStartX.current === null) return;
+    const delta = e.clientX - dragStartX.current;
+    if (Math.abs(delta) > 8) didDrag.current = true;
+    setDragOffset(delta);
+  }
+
+  function onPointerUp(e: React.PointerEvent) {
+    if (dragStartX.current === null) return;
+    const delta = e.clientX - dragStartX.current;
+    if (didDrag.current) {
+      if (delta < -(CARD_W * 0.25))      go(dragStartIdx.current + 1);
+      else if (delta > (CARD_W * 0.25))  go(dragStartIdx.current - 1);
+      else                               go(dragStartIdx.current);
+    }
+    dragStartX.current = null;
+    setDragOffset(0);
+    setDragging(false);
+  }
+
+  function onCardClick(i: number) {
+    if (didDrag.current) return;
+    if (i !== index) { go(i); return; }
+    const card = cards[i];
+    if (card.available && card.action) card.action();
+  }
+
+  const trackX = -(index * (CARD_W + GAP)) + dragOffset;
 
   return (
     <div className={styles.container}>
-      <div className={styles.panel}>
 
-      {/* ── Logo ─────────────────────────────────────────────────── */}
+      {/* ── Logo ─────────────────────────────────────────────── */}
       <header className={styles.logo}>
         <svg className={styles.logoMark} viewBox="0 0 32 32" fill="none" aria-hidden>
           <polygon points="16,2 30,10 30,22 16,30 2,22 2,10" stroke="currentColor" strokeWidth="1.5" fill="none"/>
@@ -30,124 +101,76 @@ export default function MainMenu() {
         <span className={styles.logoWord}>TACTIGON</span>
       </header>
 
-      {/* ── Navigation ───────────────────────────────────────────── */}
-      <nav className={styles.nav} aria-label="Menu principal">
-
-        {/* ── PLAY (accordion root) ── */}
-        <button
-          className={`${styles.navItem} ${playOpen ? styles.navItemActive : ''}`}
-          onClick={togglePlay}
-          aria-expanded={playOpen}
+      {/* ── Carousel ─────────────────────────────────────────── */}
+      <div
+        className={styles.carousel}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerCancel={onPointerUp}
+        style={{ cursor: dragging ? 'grabbing' : 'grab' }}
+      >
+        <div
+          className={styles.track}
+          style={{
+            transform:  `translateX(calc(50% - ${CARD_W / 2}px + ${trackX}px))`,
+            transition: dragging ? 'none' : 'transform 320ms cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+          }}
         >
-          <span className={styles.navGlyph} aria-hidden>◈</span>
-          <span className={styles.navLabel}>JOUER</span>
-          <span className={`${styles.navArrow} ${playOpen ? styles.navArrowOpen : ''}`} aria-hidden>›</span>
-        </button>
+          {cards.map((card, i) => {
+            const active = i === index;
+            return (
+              <div
+                key={i}
+                className={`${styles.card} ${active ? styles.cardActive : styles.cardInactive}`}
+                style={{ width: CARD_W }}
+                onClick={() => onCardClick(i)}
+              >
+                {/* Corner accents */}
+                <span className={styles.cornerTL} aria-hidden />
+                <span className={styles.cornerBR} aria-hidden />
 
-        {/* Play sub-menu */}
-        <div className={`${styles.subGroup} ${playOpen ? styles.subGroupOpen : ''}`} aria-hidden={!playOpen}>
+                <p className={styles.cardLabel}>{card.label}</p>
+                <p className={styles.cardSub}>{card.sub}</p>
 
-          {/* 1v1 */}
-          <button
-            className={`${styles.subItem} ${modeOpen === '2' ? styles.subItemActive : ''}`}
-            onClick={() => toggleMode('2')}
-            tabIndex={playOpen ? 0 : -1}
-            aria-expanded={modeOpen === '2'}
-          >
-            <span className={styles.subGlyph} aria-hidden>—</span>
-            <span className={styles.subLabel}>1 vs 1</span>
-            <span className={`${styles.navArrow} ${modeOpen === '2' ? styles.navArrowOpen : ''}`} aria-hidden>›</span>
-          </button>
-
-          <div className={`${styles.leafGroup} ${modeOpen === '2' ? styles.leafGroupOpen : ''}`}>
-            <button className={styles.leafItem} onClick={() => navigate('/clan?players=2')} tabIndex={modeOpen === '2' ? 0 : -1}>
-              <span className={styles.leafDot} aria-hidden/>
-              <span>Normal</span>
-            </button>
-            <button className={styles.leafItem} onClick={() => navigate('/ranked?players=2')} tabIndex={modeOpen === '2' ? 0 : -1}>
-              <span className={styles.leafDot} aria-hidden/>
-              <span>Classé</span>
-            </button>
-          </div>
-
-          {/* 4 players */}
-          <button
-            className={`${styles.subItem} ${modeOpen === '4' ? styles.subItemActive : ''}`}
-            onClick={() => toggleMode('4')}
-            tabIndex={playOpen ? 0 : -1}
-            aria-expanded={modeOpen === '4'}
-          >
-            <span className={styles.subGlyph} aria-hidden>—</span>
-            <span className={styles.subLabel}>4 Joueurs</span>
-            <span className={`${styles.navArrow} ${modeOpen === '4' ? styles.navArrowOpen : ''}`} aria-hidden>›</span>
-          </button>
-
-          <div className={`${styles.leafGroup} ${modeOpen === '4' ? styles.leafGroupOpen : ''}`}>
-            <button className={styles.leafItem} onClick={() => navigate('/clan?players=4')} tabIndex={modeOpen === '4' ? 0 : -1}>
-              <span className={styles.leafDot} aria-hidden/>
-              <span>Normal</span>
-            </button>
-            <button className={styles.leafItem} onClick={() => navigate('/ranked?players=4')} tabIndex={modeOpen === '4' ? 0 : -1}>
-              <span className={styles.leafDot} aria-hidden/>
-              <span>Classé</span>
-            </button>
-          </div>
-
+                {!card.available && (
+                  <span className={styles.cardSoon}>Bientôt</span>
+                )}
+                {card.available && active && (
+                  <span className={styles.cardCta}>Explorer →</span>
+                )}
+              </div>
+            );
+          })}
         </div>
-
-        {/* ── DISCOVER FACTIONS ── */}
-        <button className={styles.navItem} onClick={() => navigate('/factions')}>
-          <span className={styles.navGlyph} aria-hidden>◈</span>
-          <span className={styles.navLabel}>DÉCOUVRIR LES FACTIONS</span>
-        </button>
-
-        {/* ── CUSTOMIZE FACTIONS — coming soon ── */}
-        <button className={styles.navItem} disabled aria-disabled="true">
-          <span className={styles.navGlyph} aria-hidden>◈</span>
-          <span className={styles.navLabel}>PERSONNALISER</span>
-          <span className={styles.soon}>bientôt</span>
-        </button>
-
-        {/* ── RANKING — coming soon ── */}
-        <button className={styles.navItem} disabled aria-disabled="true">
-          <span className={styles.navGlyph} aria-hidden>◈</span>
-          <span className={styles.navLabel}>CLASSEMENT</span>
-          <span className={styles.soon}>bientôt</span>
-        </button>
-
-        {/* ── SETTINGS — coming soon ── */}
-        <button className={styles.navItem} disabled aria-disabled="true">
-          <span className={styles.navGlyph} aria-hidden>◈</span>
-          <span className={styles.navLabel}>PARAMÈTRES</span>
-          <span className={styles.soon}>bientôt</span>
-        </button>
-
-      </nav>
-
-      {/* ── Bottom dock ──────────────────────────────────────────── */}
-      <footer className={styles.dock}>
-        <span className={styles.dockTagline}>STRATÉGIE · TACTIQUE · CONQUÊTE</span>
-        <div className={styles.dockActions}>
-          <button className={styles.dockBtn} onClick={() => navigate('/clan?players=2')} title="Jouer 1v1" aria-label="Jouer 1v1">
-            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden><polygon points="6,4 20,12 6,20"/></svg>
-          </button>
-          <button className={styles.dockBtn} onClick={() => navigate('/factions')} title="Factions" aria-label="Factions">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden>
-              <polygon points="12,2 22,8 22,16 12,22 2,16 2,8"/>
-              <circle cx="12" cy="12" r="3" fill="currentColor"/>
-            </svg>
-          </button>
-          <button className={styles.dockBtn} onClick={() => navigate('/clan?players=4')} title="4 joueurs" aria-label="4 joueurs">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden>
-              <circle cx="8" cy="9" r="3"/>
-              <circle cx="16" cy="9" r="3"/>
-              <path d="M2 20c0-3 2.5-5 6-5h8c3.5 0 6 2 6 5"/>
-            </svg>
-          </button>
-        </div>
-      </footer>
-
       </div>
+
+      {/* ── Dots ─────────────────────────────────────────────── */}
+      <div className={styles.dots} role="tablist" aria-label="Navigation">
+        {cards.map((_, i) => (
+          <button
+            key={i}
+            className={`${styles.dot} ${i === index ? styles.dotActive : ''}`}
+            onClick={() => go(i)}
+            aria-label={cards[i].label}
+            role="tab"
+            aria-selected={i === index}
+          />
+        ))}
+      </div>
+
+      {/* ── Play frame ───────────────────────────────────────── */}
+      <div className={styles.playFrame}>
+        <span className={styles.playCornerTL} aria-hidden />
+        <span className={styles.playCornerBR} aria-hidden />
+        <button className={styles.playBtn} onClick={() => navigate('/mode?players=2')}>
+          <svg className={styles.playIcon} viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+            <polygon points="5,3 21,12 5,21"/>
+          </svg>
+          JOUER
+        </button>
+      </div>
+
     </div>
   );
 }
