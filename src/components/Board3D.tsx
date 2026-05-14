@@ -7,7 +7,7 @@
  */
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Suspense, useEffect, useMemo, useRef } from 'react';
-import { useFBX, useAnimations } from '@react-three/drei';
+import { useFBX, useAnimations, OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
 import type { BoardState, Faction, FactionPiecePattern, Move, Piece } from '../game/types';
 
@@ -325,8 +325,14 @@ function Tile({
   const emissive   = isCapture ? C_CAPTURE_EM : isLegal ? C_LEGAL_EM : '#000000';
   const emIntensity = (isCapture || isLegal) ? 1.0 : 0;
 
+  // onClick on the group: R3F bubbles pointer events from any child mesh up to
+  // its ancestor groups, so clicking the slab, a piece, or an indicator all
+  // correctly trigger the cell's click handler.
   return (
-    <group position={[x, 0, y]}>
+    <group
+      position={[x, 0, y]}
+      onClick={(e) => { e.stopPropagation(); onClick(); }}
+    >
       {/* Slab */}
       <mesh position={[0, slabH / 2, 0]} receiveShadow>
         <boxGeometry args={[TILE, slabH, TILE]} />
@@ -347,7 +353,7 @@ function Tile({
         </mesh>
       )}
 
-      {/* Capture target — pulsing red ring on tile */}
+      {/* Capture target — red ring on tile */}
       {isCapture && (
         <mesh position={[0, TILE_H + 0.008, 0]} rotation={[-Math.PI / 2, 0, 0]}>
           <ringGeometry args={[0.34, 0.45, 36]} />
@@ -361,12 +367,6 @@ function Tile({
           />
         </mesh>
       )}
-
-      {/* Invisible click hitbox — covers the full cell column */}
-      <mesh position={[0, 0.45, 0]} onClick={(e) => { e.stopPropagation(); onClick(); }}>
-        <boxGeometry args={[1, 0.9, 1]} />
-        <meshBasicMaterial visible={false} />
-      </mesh>
 
       {children}
     </group>
@@ -539,6 +539,17 @@ export default function Board3D({
       style={{ width: '100%', height: '100%', display: 'block', background: '#050304' }}
     >
       <fog attach="fog" args={['#050304', 25, 65]} />
+
+      <OrbitControls
+        target={[0, 0, 0]}
+        enablePan={false}
+        enableDamping
+        dampingFactor={0.08}
+        minPolarAngle={Math.PI / 8}
+        maxPolarAngle={Math.PI / 2.2}
+        minDistance={maxDim * 0.5}
+        maxDistance={maxDim * 2.8}
+      />
 
       <BoardScene
         gameState={gameState}

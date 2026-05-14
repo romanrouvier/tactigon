@@ -20,6 +20,26 @@
   flex-wrap: wrap;
 }
 
+.viewToggle {
+  font-family: var(--font-heading);
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--gold);
+  background: transparent;
+  border: 1px solid rgba(201,168,76,0.25);
+  cursor: pointer;
+  min-height: 36px;
+  padding: 0 0.85rem;
+  transition: border-color 180ms, box-shadow 180ms;
+  display: flex;
+  align-items: center;
+}
+.viewToggle:hover {
+  border-color: var(--gold);
+  box-shadow: 0 0 14px rgba(201,168,76,0.12);
+}
+
 .quit {
   font-family: var(--font-heading);
   font-size: 0.6rem;
@@ -104,7 +124,18 @@
   align-items: stretch;
   justify-content: stretch;
   width: 100%;
-  min-height: 0; /* allow flexbox shrink */
+  min-height: 0;
+}
+
+/* 2D mode: centre the board grid with the battle-map background */
+.boardWrap2D {
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  overflow: auto;
+  background:
+    linear-gradient(rgba(5,3,4,0.70), rgba(5,3,4,0.75)),
+    url('/battle-map.jpg') center / cover no-repeat fixed;
 }
 
 /* ── Victory overlay ─────────────────────────────────────────────────────── */

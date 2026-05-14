@@ -7,6 +7,7 @@ import { startTemplate } from '../data/startTemplate';
 import { setupBoard } from '../game/setupBoard';
 import { getLegalMoves } from '../game/legalMoves';
 import { applyMove } from '../game/applyMove';
+import Board from '../components/Board';
 import Board3D from '../components/Board3D';
 import styles from './Game.module.css';
 import type { BoardState, Move, PlayerId, Faction } from '../game/types';
@@ -41,6 +42,7 @@ export default function Game() {
     setupBoard(board, factionMap, activePlayers, startTemplate)
   );
   const [selectedPieceId, setSelectedPieceId] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<'2D' | '3D'>('3D');
 
   const selectedPiece = gameState.pieces.find(p => p.id === selectedPieceId) ?? null;
 
@@ -78,6 +80,9 @@ export default function Game() {
     <div className={styles.container}>
       <header className={styles.header}>
         <button className={styles.quit} onClick={() => navigate('/menu')}>✕ Quitter</button>
+        <button className={styles.viewToggle} onClick={() => setViewMode(v => v === '3D' ? '2D' : '3D')}>
+          {viewMode === '3D' ? '2D' : '3D'}
+        </button>
 
         {!gameState.winner ? (
           <div className={styles.turn}>
@@ -116,13 +121,22 @@ export default function Game() {
         )}
       </header>
 
-      <div className={styles.boardWrap}>
-        <Board3D
-          gameState={gameState}
-          selectedPieceId={selectedPieceId}
-          legalMoves={legalMoves}
-          onCellClick={handleCellClick}
-        />
+      <div className={`${styles.boardWrap} ${viewMode === '2D' ? styles.boardWrap2D : ''}`}>
+        {viewMode === '3D' ? (
+          <Board3D
+            gameState={gameState}
+            selectedPieceId={selectedPieceId}
+            legalMoves={legalMoves}
+            onCellClick={handleCellClick}
+          />
+        ) : (
+          <Board
+            gameState={gameState}
+            selectedPieceId={selectedPieceId}
+            legalMoves={legalMoves}
+            onCellClick={handleCellClick}
+          />
+        )}
       </div>
 
       {gameState.winner && (
