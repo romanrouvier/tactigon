@@ -18,15 +18,15 @@ const WALL_H = 0.22;   // wall slab height
 const PIECE_Y = TILE_H; // base Y for pieces
 
 // ─── Palette ──────────────────────────────────────────────────────────────────
-const C_TILE_LIGHT = '#1c1510';
-const C_TILE_DARK  = '#131009';
-const C_WALL       = '#080503';
-const C_LEGAL_EM   = '#1a5010';
-const C_CAPTURE_EM = '#5a1208';
-const C_DOT        = '#55d035';
-const C_DOT_EM     = '#30a018';
-const C_RING       = '#b02010';
-const C_RING_EM    = '#801008';
+const C_TILE_LIGHT = '#f2f4f8';   // bright white-blue marble
+const C_TILE_DARK  = '#dde2ec';   // slightly cooler square
+const C_WALL       = '#b8c0cc';   // medium-gray wall slab
+const C_LEGAL_EM   = '#0a6020';
+const C_CAPTURE_EM = '#6a1008';
+const C_DOT        = '#22cc44';
+const C_DOT_EM     = '#10a030';
+const C_RING       = '#cc2010';
+const C_RING_EM    = '#991008';
 
 // Background colour — light blue-white sky
 const BG_COLOR = '#ddeeff';
@@ -366,13 +366,13 @@ function BoardScene({
   return (
     <>
       {/* ── Lighting (≤4 lights total) ── */}
-      {/* 1 — Ambient fill */}
-      <ambientLight color="#c8dff8" intensity={2.8} />
+      {/* 1 — Ambient fill — bright daylight */}
+      <ambientLight color="#e8f0ff" intensity={4.0} />
       {/* 2 — Primary shadow-casting key light */}
       <directionalLight
         position={[6, 14, 10]}
         color="#ffffff"
-        intensity={2.6}
+        intensity={3.5}
         castShadow
         shadow-mapSize={[2048, 2048]}
         shadow-camera-far={60}
@@ -401,7 +401,7 @@ function BoardScene({
         {/* Stone plinth beneath tiles */}
         <mesh position={[(cols - 1) / 2, -0.06, (rows - 1) / 2]} receiveShadow>
           <boxGeometry args={[cols + 0.6, 0.12, rows + 0.6]} />
-          <meshStandardMaterial color="#080604" roughness={0.92} metalness={0.05} />
+          <meshStandardMaterial color="#cdd4de" roughness={0.88} metalness={0.04} />
         </mesh>
 
         {Array.from({ length: rows }, (_, y) =>

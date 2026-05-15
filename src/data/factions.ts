@@ -258,7 +258,7 @@ export const factions: Faction[] = [
       {
         type: 'inter2',
         imageUrl: '/pieces/forgeur-inter2.png',
-        // Long horizontal line: 3 cells each side, sliding (blocking)
+        // Long horizontal line: 3 cells each side + 1 step straight forward
         pattern: {
           targets: [
             { dx: -1, dy: 0 },
@@ -267,6 +267,7 @@ export const factions: Faction[] = [
             { dx:  1, dy: 0 },
             { dx:  2, dy: 0, intermediates: [{ dx:  1, dy: 0, kind: 'blocking' }] },
             { dx:  3, dy: 0, intermediates: [{ dx:  1, dy: 0, kind: 'blocking' }, { dx:  2, dy: 0, kind: 'blocking' }] },
+            { dx:  0, dy: -1 },
           ],
         },
       },
