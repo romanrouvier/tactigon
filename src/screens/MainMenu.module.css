@@ -383,6 +383,22 @@
   font-style: italic;
 }
 
+/* ── Faction picker (per player) ────────────────────────────── */
+.pickerBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.pickerLabel {
+  font-family: var(--font-heading);
+  font-size: 0.52rem;
+  letter-spacing: 0.20em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  opacity: 0.75;
+}
+
 /* ── Faction cards ──────────────────────────────────────────── */
 .factionRow {
   display: grid;
@@ -489,6 +505,17 @@
   border: 1px solid color-mix(in srgb, var(--faction-color) 28%, transparent);
   padding: 0.1rem 0.32rem;
   border-radius: 999px;
+}
+
+.factionCardTaken {
+  opacity: 0.28;
+  cursor: not-allowed;
+  filter: grayscale(0.6);
+}
+.factionCardTaken:hover {
+  transform: none !important;
+  box-shadow: none !important;
+  border-color: var(--border-glass) !important;
 }
 
 .factionCheck {

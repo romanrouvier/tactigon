@@ -388,7 +388,7 @@ function FactionList({ onSelect }: { onSelect: (f: Faction) => void }) {
       {/* ── Bottom nav ────────────────────────────────────────── */}
       <BottomNav
         onHome={() => navigate('/menu')}
-        onPlay={() => navigate('/clan?players=2')}
+        onPlay={() => navigate('/menu')}
       />
     </div>
   );
@@ -406,7 +406,7 @@ export default function Factions() {
       <FactionDetail
         faction={selected}
         onBack={() => setSelected(null)}
-        onPlay={() => navigate(`/clan?players=2`)}
+        onPlay={() => navigate('/menu')}
       />
     );
   }

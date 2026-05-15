@@ -146,7 +146,7 @@ export default function Game() {
               Joueur {gameState.winner} est victorieux
             </h2>
             <p>{winnerFaction?.name} remporte la guerre.</p>
-            <button className={styles.btnPlay} onClick={() => navigate(`/clan?players=${players}`)}>
+            <button className={styles.btnPlay} onClick={() => navigate('/menu')}>
               Rejouer
             </button>
             <button className={styles.btnMenu} onClick={() => navigate('/menu')}>
