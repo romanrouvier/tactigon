@@ -6,7 +6,7 @@
  * Player 1 starts near the camera (high Z); Player 2 is far (low Z).
  */
 import { Canvas, useFrame } from '@react-three/fiber';
-import { Component, useMemo, useRef, type ReactNode } from 'react';
+import { Component, useEffect, useMemo, useRef, type ReactNode } from 'react';
 import { OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
 import type { BoardState, Faction, FactionPiecePattern, Move, Piece } from '../game/types';
@@ -27,6 +27,9 @@ const C_DOT        = '#55d035';
 const C_DOT_EM     = '#30a018';
 const C_RING       = '#b02010';
 const C_RING_EM    = '#801008';
+
+// Background colour — matches App.css --bg-void design token
+const BG_COLOR = '#060810';
 
 // ─── Error boundary (contains 3D render crashes) ─────────────────────────────
 interface EBState { hasError: boolean }
@@ -220,6 +223,14 @@ function Piece3D({
     [faction.color]
   );
 
+  // Dispose GPU resources when piece is removed or faction color changes
+  useEffect(() => {
+    return () => {
+      mat.dispose();
+      matGlow.dispose();
+    };
+  }, [mat, matGlow]);
+
   useFrame(({ clock }) => {
     if (!groupRef.current) return;
     const t     = clock.getElapsedTime();
@@ -339,9 +350,9 @@ function BoardScene({
   const ox = -(cols - 1) / 2;
   const oz = -(rows - 1) / 2;
 
-  // Faction accent lights near each player's start zone
+  // Faction accent point lights — one per active player, capped at 2
   const playerLights = useMemo(() => {
-    return gameState.activePlayers.map(pid => {
+    return gameState.activePlayers.slice(0, 2).map(pid => {
       const faction = factions[pid];
       const setup   = layout.players.find(p => p.playerId === pid);
       if (!setup || !faction) return null;
@@ -354,9 +365,10 @@ function BoardScene({
 
   return (
     <>
-      {/* ── Lighting ── */}
-      <ambientLight color="#1a0d09" intensity={2.0} />
-      <hemisphereLight args={['#1a0d09', '#0a0508', 0.9]} />
+      {/* ── Lighting (≤4 lights total) ── */}
+      {/* 1 — Ambient fill */}
+      <ambientLight color="#1a0d09" intensity={2.4} />
+      {/* 2 — Primary shadow-casting key light */}
       <directionalLight
         position={[6, 14, 10]}
         color="#fde8c0"
@@ -370,8 +382,7 @@ function BoardScene({
         shadow-camera-bottom={-18}
         shadow-bias={-0.0005}
       />
-      <directionalLight position={[-5, 8, -8]} color="#2840a8" intensity={0.5} />
-
+      {/* 3 & 4 — Per-player faction colour accent lights (max 2) */}
       {playerLights.map(l =>
         l ? (
           <pointLight
@@ -461,11 +472,12 @@ export default function Board3D({ gameState, selectedPieceId, legalMoves, onCell
     >
       <Canvas
         shadows
+        dpr={[1, 2]}
         gl={{ antialias: true, alpha: false }}
         camera={{ position: [0, camY, camZ], fov: 46, near: 0.1, far: 120 }}
-        style={{ width: '100%', height: '100%', display: 'block', background: '#050304' }}
+        style={{ width: '100%', height: '100%', display: 'block', background: BG_COLOR }}
       >
-        <fog attach="fog" args={['#050304', 25, 65]} />
+        <fog attach="fog" args={[BG_COLOR, 25, 65]} />
 
         <OrbitControls
           makeDefault

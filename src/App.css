@@ -3,47 +3,64 @@
 
 /* ── Design Tokens ────────────────────────────────────────────────────────── */
 :root {
-  /* surfaces */
-  --bg-void:    #050304;
-  --bg-deep:    #0a0807;
-  --bg-surface: #110e0c;
-  --bg-card:    #181412;
-  --bg-raised:  #1f1b18;
+  /* ── Surfaces (dark navy-fantasy) ─────────── */
+  --bg-void:    #060810;
+  --bg-deep:    #080c14;
+  --bg-surface: #0d1120;
+  --bg-card:    #111827;
+  --bg-raised:  #1a2235;
 
-  /* gold palette */
+  /* ── Glass surfaces ───────────────────────── */
+  --bg-glass:     rgba(255, 255, 255, 0.04);
+  --bg-glass-mid: rgba(255, 255, 255, 0.07);
+
+  /* ── Gold palette ─────────────────────────── */
   --gold:        #c9a84c;
-  --gold-bright: #e0c060;
-  --gold-dim:    #8a6a30;
-  --gold-glow:   rgba(201, 168, 76, 0.25);
+  --gold-bright: #e8c878;
+  --gold-light:  #f0d890;
+  --gold-dim:    #7a6030;
+  --gold-glow:   rgba(201, 168, 76, 0.28);
   --gold-border: rgba(201, 168, 76, 0.18);
 
-  /* text */
-  --text-parchment: #e8dfc8;
+  /* ── Gradient gold ────────────────────────── */
+  --grad-gold:        linear-gradient(135deg, #8a6030 0%, #c9a84c 35%, #f0d890 55%, #c9a84c 75%, #8a6030 100%);
+  --grad-gold-subtle: linear-gradient(135deg, #7a6030 0%, #c9a84c 100%);
+  --grad-gold-btn:    linear-gradient(135deg, rgba(201,168,76,0.18) 0%, rgba(201,168,76,0.08) 100%);
+
+  /* ── Accent (mystical purple/indigo depth) ── */
+  --accent-purple: rgba(120, 80, 200, 0.22);
+  --accent-blue:   rgba(60, 90, 180, 0.15);
+
+  /* ── Text ─────────────────────────────────── */
+  --text-parchment: #f0e8d8;
   --text-muted:     #8a7a68;
   --text-faint:     #504540;
 
-  /* accents */
+  /* ── Alert colours ────────────────────────── */
   --red-blood:  #8b1a1a;
   --red-bright: #c0302e;
   --green-safe: rgba(90, 200, 80, 0.22);
   --red-danger: rgba(200, 60, 40, 0.28);
 
-  /* borders */
-  --border-subtle: rgba(201, 168, 76, 0.10);
+  /* ── Borders ──────────────────────────────── */
+  --border-subtle: rgba(201, 168, 76, 0.08);
   --border-mid:    rgba(201, 168, 76, 0.22);
   --border-strong: rgba(201, 168, 76, 0.50);
+  --border-glass:  rgba(255, 255, 255, 0.07);
 
-  /* fonts */
+  /* ── Fonts ────────────────────────────────── */
   --font-display: 'Cinzel Decorative', 'Palatino Linotype', serif;
   --font-heading: 'Cinzel', 'Palatino Linotype', serif;
   --font-body:    'Crimson Pro', 'Georgia', serif;
 
-  /* shadows */
-  --shadow-card: 0 4px 24px rgba(0,0,0,0.6), 0 1px 4px rgba(0,0,0,0.4);
-  --shadow-glow: 0 0 30px var(--gold-glow), 0 0 60px rgba(201,168,76,0.08);
+  /* ── Shadows ──────────────────────────────── */
+  --shadow-card:  0 8px 32px rgba(0,0,0,0.8), 0 2px 8px rgba(0,0,0,0.5);
+  --shadow-glow:  0 0 40px var(--gold-glow), 0 0 80px rgba(201,168,76,0.07);
+  --shadow-inset: inset 0 1px 0 rgba(255,255,255,0.05);
 
-  /* easing */
-  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  /* ── Easing ───────────────────────────────── */
+  --ease-out:    cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* ── Reset ────────────────────────────────────────────────────────────────── */
@@ -84,6 +101,7 @@ button {
   border: none;
   font-family: var(--font-heading);
   background: transparent;
+  color: inherit;
 }
 
 h1, h2, h3 {
@@ -96,6 +114,9 @@ h1, h2, h3 {
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: var(--bg-deep); }
 ::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 2px; }
+
+/* ── Focus visible ────────────────────────────────────────────────────────── */
+:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
 
 /* ── Reduced motion ───────────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
