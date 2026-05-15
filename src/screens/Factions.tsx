@@ -383,9 +383,6 @@ function FactionList({ onSelect }: { onSelect: (f: Faction) => void }) {
           );
         })}
 
-        {filtered.length === 0 && (
-          <p className={styles.emptyMsg}>Aucune faction pour ce filtre.</p>
-        )}
       </div>
 
       {/* ── Bottom nav ────────────────────────────────────────── */}
