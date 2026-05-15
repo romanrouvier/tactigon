@@ -9,9 +9,18 @@ export default function ClanSelect() {
   const [params] = useSearchParams();
   const totalPlayers = params.get('players') === '4' ? 4 : 2;
 
-  const [step, setStep] = useState<number>(1); // 1..totalPlayers
+  // p1 pre-selected from the play overlay
+  const p1Preset = Number(params.get('p1')) || null;
+  const startStep = p1Preset && totalPlayers > 1 ? 2 : 1;
+
+  const [step, setStep] = useState<number>(startStep);
   const [choices, setChoices] = useState<Record<number, number | null>>(
-    Object.fromEntries(Array.from({ length: totalPlayers }, (_, i) => [i + 1, null]))
+    Object.fromEntries(
+      Array.from({ length: totalPlayers }, (_, i) => [
+        i + 1,
+        i === 0 ? p1Preset : null,
+      ])
+    )
   );
 
   const currentChoice = choices[step] ?? null;
