@@ -28,8 +28,8 @@ const C_DOT_EM     = '#30a018';
 const C_RING       = '#b02010';
 const C_RING_EM    = '#801008';
 
-// Background colour — matches App.css --bg-void design token
-const BG_COLOR = '#060810';
+// Background colour — light blue-white sky
+const BG_COLOR = '#ddeeff';
 
 // ─── Error boundary (contains 3D render crashes) ─────────────────────────────
 interface EBState { hasError: boolean }
@@ -367,12 +367,12 @@ function BoardScene({
     <>
       {/* ── Lighting (≤4 lights total) ── */}
       {/* 1 — Ambient fill */}
-      <ambientLight color="#1a0d09" intensity={2.4} />
+      <ambientLight color="#c8dff8" intensity={2.8} />
       {/* 2 — Primary shadow-casting key light */}
       <directionalLight
         position={[6, 14, 10]}
-        color="#fde8c0"
-        intensity={2.2}
+        color="#ffffff"
+        intensity={2.6}
         castShadow
         shadow-mapSize={[2048, 2048]}
         shadow-camera-far={60}
