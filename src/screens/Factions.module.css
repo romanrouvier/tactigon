@@ -18,53 +18,14 @@
    LIST VIEW
    ══════════════════════════════════════════════════════════════ */
 
-/* ── Filter tabs ────────────────────────────────────────────── */
-.filterBar {
-  display: flex;
-  gap: 0.5rem;
-  padding: 1.5rem 1.25rem 1rem;
-  overflow-x: auto;
-  scrollbar-width: none;
-  flex-shrink: 0;
-}
-.filterBar::-webkit-scrollbar { display: none; }
-
-.filterPill {
-  flex-shrink: 0;
-  padding: 0.42rem 1.1rem;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.09);
-  background: rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(12px);
-  color: var(--text-muted);
-  font-family: var(--font-heading);
-  font-size: 0.62rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: all 250ms var(--ease-out);
-  white-space: nowrap;
-}
-
-.filterPillActive {
-  background: rgba(201, 168, 76, 0.14);
-  border-color: rgba(201, 168, 76, 0.50);
-  color: var(--gold-bright);
-  box-shadow:
-    0 0 16px rgba(201, 168, 76, 0.16),
-    inset 0 1px 0 rgba(201, 168, 76, 0.10);
-}
-
-/* ── 2-column card grid ─────────────────────────────────────── */
+/* ── Card grid ──────────────────────────────────────────────── */
 .cardGrid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 0.85rem;
-  padding: 0 1.25rem 1rem;
+  gap: 1rem;
+  padding: 1.5rem 1.25rem calc(78px + 1.5rem);
   overflow-y: auto;
   flex: 1;
-  /* bottom padding accounts for bottom nav height */
-  padding-bottom: calc(78px + 1.5rem);
   scrollbar-width: none;
 }
 .cardGrid::-webkit-scrollbar { display: none; }
@@ -740,29 +701,31 @@
 /* ══════════════════════════════════════════════════════════════
    RESPONSIVE BREAKPOINTS
    ══════════════════════════════════════════════════════════════ */
-@media (min-width: 600px) {
+/* Tablet — single column, larger cards */
+@media (min-width: 640px) {
   .cardGrid {
     grid-template-columns: repeat(2, 1fr);
-    padding: 0 1.5rem;
-    padding-bottom: calc(78px + 1.5rem);
-    gap: 1.25rem;
+    gap: 1.5rem;
+    padding: 2rem 2rem calc(78px + 2rem);
   }
 }
 
+/* Desktop — always 2 wide columns, cards are large and prominent */
 @media (min-width: 900px) {
   .listRoot { padding-bottom: 78px; }
   .cardGrid {
     grid-template-columns: repeat(2, 1fr);
-    max-width: 900px;
+    max-width: 1100px;
     margin: 0 auto;
-    gap: 1.5rem;
-    padding: 0 2rem calc(78px + 2rem);
+    gap: 2rem;
+    padding: 2.5rem 3rem calc(78px + 2rem);
   }
-  /* Taller, wider cards on desktop */
   .card:hover  { transform: translateY(-6px) scale(1.02); }
   .cardVisual  { aspect-ratio: 16 / 9; }
-  .cardName    { font-size: 1rem; }
-  .cardTagBadge { font-size: 0.58rem; }
+  .cardName    { font-size: 1.1rem; }
+  .cardTagBadge { font-size: 0.60rem; }
+  .cardPieceCount { font-size: 0.65rem; }
+  .cardFooter  { padding: 0.9rem 1.25rem; }
   /* Nav */
   .bottomNav { padding: 0 max(0.5rem, 3vw); }
   .navItem   { max-width: 130px; font-size: 0.54rem; }
@@ -774,14 +737,13 @@
   .stickyCtaBtn { max-width: 480px; }
 }
 
-@media (min-width: 1200px) {
+@media (min-width: 1400px) {
   .cardGrid {
-    grid-template-columns: repeat(4, 1fr);
-    max-width: 1400px;
-    gap: 1.75rem;
-    padding: 0 3rem calc(78px + 2rem);
+    max-width: 1300px;
+    gap: 2.5rem;
+    padding: 3rem 4rem calc(78px + 2rem);
   }
-  .cardVisual { aspect-ratio: 3 / 4; }
+  .cardVisual { aspect-ratio: 21 / 9; }
   .navItem    { max-width: 150px; }
 }
 

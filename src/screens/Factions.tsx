@@ -61,7 +61,6 @@ const FACTION_META: Record<number, {
   },
 };
 
-const FILTER_TAGS = ['Toutes', 'Mobilité', 'Contrôle', 'Furtif', 'Frappe'];
 
 // ── SVG shapes ────────────────────────────────────────────────────────────────
 function PieceShapeSVG({ type }: { type: string }) {
@@ -340,36 +339,14 @@ function FactionDetail({ faction, onBack, onPlay }: {
 //  LIST VIEW
 // ══════════════════════════════════════════════════════════════════════════════
 function FactionList({ onSelect }: { onSelect: (f: Faction) => void }) {
-  const navigate   = useNavigate();
-  const [filter, setFilter] = useState('Toutes');
-
-  const filtered = factions.filter(f => {
-    if (filter === 'Toutes') return true;
-    return FACTION_META[f.id]?.tags.some(t =>
-      t.toLowerCase().includes(filter.toLowerCase()) ||
-      filter.toLowerCase().includes(t.toLowerCase())
-    );
-  });
+  const navigate = useNavigate();
 
   return (
     <div className={styles.listRoot}>
 
-      {/* ── Filter tabs ───────────────────────────────────────── */}
-      <div className={styles.filterBar}>
-        {FILTER_TAGS.map(tag => (
-          <button
-            key={tag}
-            className={`${styles.filterPill} ${filter === tag ? styles.filterPillActive : ''}`}
-            onClick={() => setFilter(tag)}
-          >
-            {tag}
-          </button>
-        ))}
-      </div>
-
       {/* ── Card grid ─────────────────────────────────────────── */}
       <div className={styles.cardGrid}>
-        {filtered.map(faction => {
+        {factions.map(faction => {
           const shortName = faction.name.split('—')[1]?.trim() ?? faction.name;
           const meta = FACTION_META[faction.id];
           return (
