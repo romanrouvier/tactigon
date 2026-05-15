@@ -11,7 +11,8 @@
   background: var(--bg-void);
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -23,12 +24,10 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 1rem;
-  padding: 1.5rem 1.25rem calc(78px + 1.5rem);
-  overflow-y: auto;
-  flex: 1;
-  scrollbar-width: none;
+  padding: 1.5rem 1rem calc(78px + 1.5rem);
+  width: 100%;
+  box-sizing: border-box;
 }
-.cardGrid::-webkit-scrollbar { display: none; }
 
 /* Empty state */
 .emptyMsg {
@@ -701,50 +700,36 @@
 /* ══════════════════════════════════════════════════════════════
    RESPONSIVE BREAKPOINTS
    ══════════════════════════════════════════════════════════════ */
-/* Tablet — single column, larger cards */
-@media (min-width: 640px) {
+
+/* Desktop — 2 columns, full width */
+@media (min-width: 900px) {
+  .listRoot { padding-bottom: 78px; }
+
   .cardGrid {
     grid-template-columns: repeat(2, 1fr);
+    width: 100%;
     gap: 1.5rem;
     padding: 2rem 2rem calc(78px + 2rem);
   }
-}
 
-/* Desktop — always 2 wide columns, cards are large and prominent */
-@media (min-width: 900px) {
-  .listRoot { padding-bottom: 78px; }
-  .cardGrid {
-    grid-template-columns: repeat(2, 1fr);
-    max-width: 1100px;
-    margin: 0 auto;
-    gap: 2rem;
-    padding: 2.5rem 3rem calc(78px + 2rem);
-  }
-  .card:hover  { transform: translateY(-6px) scale(1.02); }
-  .cardVisual  { aspect-ratio: 16 / 9; }
-  .cardName    { font-size: 1.1rem; }
+  .card:hover   { transform: translateY(-5px) scale(1.01); }
+  .cardVisual   { aspect-ratio: 4 / 3; }
+  .cardInitial  { font-size: clamp(5rem, 10vw, 9rem); }
+  .cardName     { font-size: 1.1rem; }
   .cardTagBadge { font-size: 0.60rem; }
   .cardPieceCount { font-size: 0.65rem; }
-  .cardFooter  { padding: 0.9rem 1.25rem; }
+  .cardFooter   { padding: 0.9rem 1.25rem; }
+
   /* Nav */
   .bottomNav { padding: 0 max(0.5rem, 3vw); }
   .navItem   { max-width: 130px; font-size: 0.54rem; }
+
   /* Detail */
   .detailHero   { height: 420px; }
   .statsGrid    { grid-template-columns: repeat(4, 1fr); }
   .detailBody   { max-width: 800px; margin: 0 auto; }
   .stickyCta    { display: flex; justify-content: center; }
   .stickyCtaBtn { max-width: 480px; }
-}
-
-@media (min-width: 1400px) {
-  .cardGrid {
-    max-width: 1300px;
-    gap: 2.5rem;
-    padding: 3rem 4rem calc(78px + 2rem);
-  }
-  .cardVisual { aspect-ratio: 21 / 9; }
-  .navItem    { max-width: 150px; }
 }
 
 /* Mobile fine-tuning */
