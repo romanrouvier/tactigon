@@ -356,9 +356,9 @@
 .navPlay { position: relative; }
 
 .playBubble {
-  width: 48px;
-  height: 48px;
-  border-radius: 15px;
+  width: 42px;
+  height: 42px;
+  border-radius: 13px;
   background: linear-gradient(135deg, rgba(201,168,76,0.26), rgba(201,168,76,0.10));
   border: 1px solid rgba(201,168,76,0.44);
   display: flex;
@@ -366,9 +366,9 @@
   justify-content: center;
   color: var(--gold-bright);
   box-shadow:
-    0 4px 18px rgba(201,168,76,0.22),
-    0 0 36px rgba(201,168,76,0.09);
-  margin-top: -14px;
+    0 4px 16px rgba(201,168,76,0.20),
+    0 0 28px rgba(201,168,76,0.08);
+  margin-top: -6px;
   transition: all 320ms var(--ease-out);
   flex-shrink: 0;
 }

@@ -148,60 +148,64 @@ function StatBar({ value, max, color }: { value: number; max: number; color: str
   );
 }
 
-// ── Bottom nav (shared) ───────────────────────────────────────────────────────
-function BottomNav({ active, onHome, onFactions, onPlay }: {
-  active: 'home' | 'factions' | 'play';
+// ── Bottom nav (shared) — 5 items ────────────────────────────────────────────
+function BottomNav({ onHome, onPlay }: {
   onHome: () => void;
-  onFactions: () => void;
   onPlay: () => void;
 }) {
   return (
     <nav className={styles.bottomNav} aria-label="Navigation">
-      <button
-        className={`${styles.navItem} ${active === 'home' ? styles.navItemActive : ''}`}
-        onClick={onHome}
-        aria-label="Accueil"
-      >
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="22" height="22">
+
+      {/* Accueil */}
+      <button className={styles.navItem} onClick={onHome} aria-label="Accueil">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"
+             strokeLinecap="round" strokeLinejoin="round" width="22" height="22">
           <path d="M3 12L12 3l9 9" /><path d="M9 21V12h6v9" />
         </svg>
         <span>Accueil</span>
       </button>
 
-      <button
-        className={`${styles.navItem} ${active === 'factions' ? styles.navItemActive : ''}`}
-        onClick={onFactions}
-        aria-label="Factions"
-      >
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="22" height="22">
-          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-          <circle cx="9" cy="7" r="4" />
-          <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+      {/* Factions — active */}
+      <button className={`${styles.navItem} ${styles.navItemActive}`} aria-label="Factions" aria-current="page">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"
+             strokeLinecap="round" strokeLinejoin="round" width="22" height="22">
+          <path d="M12 2L8 6H4l1 8 7 8 7-8 1-8h-4L12 2z" />
         </svg>
         <span>Factions</span>
       </button>
 
-      {/* Play — prominent center button */}
-      <button
-        className={`${styles.navItem} ${styles.navItemPlay} ${active === 'play' ? styles.navItemActive : ''}`}
-        onClick={onPlay}
-        aria-label="Jouer"
-      >
+      {/* Jouer — elevated centre bubble */}
+      <button className={`${styles.navItem} ${styles.navItemPlay}`} onClick={onPlay} aria-label="Jouer">
         <div className={styles.navPlayBubble}>
-          <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
             <polygon points="6,3 21,12 6,21" />
           </svg>
         </div>
         <span>Jouer</span>
       </button>
 
-      <button className={`${styles.navItem}`} aria-label="Paramètres" disabled>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="22" height="22">
-          <circle cx="12" cy="12" r="3" />
-          <path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14" />
+      {/* Classement */}
+      <button className={styles.navItem} disabled aria-label="Classement">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"
+             strokeLinecap="round" strokeLinejoin="round" width="22" height="22">
+          <path d="M6 9H4a2 2 0 0 0-2 2v9h20v-9a2 2 0 0 0-2-2h-2" />
+          <path d="M8 9V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v4" />
+          <line x1="12" y1="12" x2="12" y2="17" />
+          <line x1="9" y1="15" x2="15" y2="15" />
         </svg>
-        <span>Réglages</span>
+        <span>Classement</span>
       </button>
+
+      {/* Profil */}
+      <button className={styles.navItem} disabled aria-label="Profil">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"
+             strokeLinecap="round" strokeLinejoin="round" width="22" height="22">
+          <circle cx="12" cy="8" r="4" />
+          <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+        </svg>
+        <span>Profil</span>
+      </button>
+
     </nav>
   );
 }
@@ -350,28 +354,6 @@ function FactionList({ onSelect }: { onSelect: (f: Faction) => void }) {
   return (
     <div className={styles.listRoot}>
 
-      {/* ── Header ────────────────────────────────────────────── */}
-      <header className={styles.listHeader}>
-        <button
-          className={styles.listHeaderBack}
-          onClick={() => navigate('/menu')}
-          aria-label="Retour au menu"
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
-            strokeLinecap="round" strokeLinejoin="round" width="20" height="20">
-            <path d="M19 12H5M12 19l-7-7 7-7" />
-          </svg>
-        </button>
-        <h1 className={styles.listHeaderTitle}>Factions</h1>
-        <button className={styles.listHeaderAction} aria-label="À propos">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-            strokeLinecap="round" strokeLinejoin="round" width="20" height="20">
-            <circle cx="12" cy="12" r="10" />
-            <path d="M12 16v-4M12 8h.01" />
-          </svg>
-        </button>
-      </header>
-
       {/* ── Filter tabs ───────────────────────────────────────── */}
       <div className={styles.filterBar}>
         {FILTER_TAGS.map(tag => (
@@ -431,9 +413,7 @@ function FactionList({ onSelect }: { onSelect: (f: Faction) => void }) {
 
       {/* ── Bottom nav ────────────────────────────────────────── */}
       <BottomNav
-        active="factions"
         onHome={() => navigate('/menu')}
-        onFactions={() => {}}
         onPlay={() => navigate('/clan?players=2')}
       />
     </div>
