@@ -9,7 +9,7 @@
   min-height: 100svh;
   display: flex;
   flex-direction: column;
-  background: #36494E;
+  background: var(--bg-gradient);
   overflow-x: hidden;
 }
 
@@ -25,9 +25,8 @@
   justify-content: space-between;
   padding: 0 1.25rem;
   height: 72px;
-  background: rgba(30, 40, 46, 0.92);
-  backdrop-filter: blur(20px) saturate(1.3);
-  border-bottom: 1px solid var(--border-subtle);
+  background: #36494E;
+  border-bottom: 1px solid rgba(159, 205, 168, 0.08);
   box-shadow: 0 2px 20px rgba(0, 0, 0, 0.4);
   flex-shrink: 0;
   animation: slideDown 400ms cubic-bezier(0.22, 1, 0.36, 1) both;
@@ -293,11 +292,13 @@
   background: rgba(159, 205, 168, 0.06);
 }
 .typeBtnActive {
-  border-color: rgba(159, 205, 168, 0.55) !important;
-  background: rgba(159, 205, 168, 0.12) !important;
-  box-shadow: 0 0 20px rgba(159, 205, 168, 0.10);
+  border-color: var(--gold) !important;
+  background: var(--gold) !important;
+  box-shadow: 0 4px 18px rgba(159, 205, 168, 0.35);
+  color: #1E3438 !important;
 }
-.typeBtnActive span { color: #9FCDA8 !important; }
+.typeBtnActive span { color: #1E3438 !important; }
+.typeBtnActive small { color: rgba(30,52,56,0.65) !important; }
 
 /* ── Mode buttons ───────────────────────────────────────────── */
 .modeRow {
@@ -324,10 +325,13 @@
   background: rgba(159, 205, 168, 0.06);
 }
 .modeBtnActive {
-  border-color: rgba(159, 205, 168, 0.55) !important;
-  background: rgba(159, 205, 168, 0.12) !important;
-  box-shadow: 0 0 20px rgba(159, 205, 168, 0.10);
+  border-color: var(--gold) !important;
+  background: var(--gold) !important;
+  box-shadow: 0 4px 18px rgba(159, 205, 168, 0.35);
 }
+.modeBtnActive .modeTitle { color: #1E3438 !important; }
+.modeBtnActive .modeDesc  { color: rgba(30,52,56,0.65) !important; }
+.modeBtnActive .modeIcon  { filter: none; }
 
 .modeIcon {
   font-size: 1.3rem;
@@ -581,7 +585,7 @@
   gap: 0.3rem;
   background: transparent;
   border: none;
-  color: var(--text-faint);
+  color: #9fcda8;
   font-family: var(--font-heading);
   font-size: 0.52rem;
   letter-spacing: 0.11em;
@@ -594,7 +598,7 @@
   overflow: visible;
 }
 .navItem:hover:not(:disabled) {
-  color: var(--text-muted);
+  color: #b8ddbf;
   background: var(--bg-glass);
 }
 .navItem:disabled {
@@ -607,8 +611,14 @@
   display: block;
 }
 
+/* Active nav item — filled teal pill (matches screenshot) */
 .navActive {
-  color: var(--gold) !important;
+  background: var(--gold) !important;
+  color: #1E3438 !important;
+  box-shadow: 0 4px 18px rgba(159,205,168,0.35);
+}
+.navActive svg {
+  stroke: #1E3438;
 }
 
 /* ── Play bubble (elevated centre button) ───────────────────── */
@@ -618,22 +628,26 @@
   width: 42px;
   height: 42px;
   border-radius: 13px;
-  background: linear-gradient(135deg, rgba(159,205,168,0.26), rgba(159,205,168,0.10));
-  border: 1px solid rgba(159,205,168,0.44);
+  background: var(--gold);
+  border: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--gold-bright);
-  box-shadow: 0 4px 16px rgba(159,205,168,0.20), 0 0 28px rgba(159,205,168,0.08);
+  color: #1E3438;
+  box-shadow: 0 4px 18px rgba(159,205,168,0.40);
   margin-top: -6px;
-  transition: all 320ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition: all 300ms cubic-bezier(0.22, 1, 0.36, 1);
   flex-shrink: 0;
 }
 .navPlay:hover .playBubble {
-  background: rgba(159,205,168,0.34);
-  border-color: rgba(159,205,168,0.74);
-  box-shadow: 0 6px 28px rgba(159,205,168,0.34), 0 0 50px rgba(159,205,168,0.14);
+  background: var(--gold-bright);
+  box-shadow: 0 6px 28px rgba(159,205,168,0.55);
   transform: scale(1.08) translateY(-2px);
+}
+/* Play bubble when overlay is open — slightly dimmed solid */
+.navActive .playBubble {
+  background: var(--secondary);
+  box-shadow: 0 4px 18px rgba(125,194,165,0.45);
 }
 
 /* ══════════════════════════════════════════════════════════════

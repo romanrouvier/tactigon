@@ -1,11 +1,12 @@
 /* ── Design Tokens ────────────────────────────────────────────────────────── */
 :root {
   /* ── Surfaces ─────────────────────────────── */
-  --bg-void:    #36494E;
-  --bg-deep:    #2e3d42;
-  --bg-surface: #3d5157;
-  --bg-card:    #425860;
-  --bg-raised:  #4a636c;
+  --bg-void:    #070911;
+  --bg-gradient: linear-gradient(360deg, rgba(7, 9, 17, 1) 0%, rgba(22, 33, 36, 1) 35%, rgba(54, 73, 78, 1) 92%);
+  --bg-deep:    #111c1f;
+  --bg-surface: #1e2f33;
+  --bg-card:    #243840;
+  --bg-raised:  #2c4249;
 
   /* ── Glass surfaces ───────────────────────── */
   --bg-glass:     rgba(255, 255, 255, 0.06);
@@ -72,7 +73,7 @@
 html, body, #root {
   height: 100%;
   width: 100%;
-  background: var(--bg-void);
+  background: var(--bg-gradient);
   color: var(--text-parchment);
   font-family: var(--font-body);
   font-size: 16px;

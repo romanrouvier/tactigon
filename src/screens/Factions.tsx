@@ -65,6 +65,8 @@ const FACTION_META: Record<number, {
 
 
 // ── 3D GLB viewer (HD model for faction inspector) ────────────────────────────
+const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
 function GLBModel({ url }: { url: string }) {
   const { scene } = useGLTF(url);
   const cloned = useMemo(() => scene.clone(true), [scene]);
@@ -73,11 +75,19 @@ function GLBModel({ url }: { url: string }) {
 }
 
 function GLBPieceThumb({ url }: { url: string }) {
+  // Mobile: skip WebGL Canvas to avoid context limit and GPU memory crash
+  if (isMobile) {
+    return (
+      <div className={styles.pieceThumb3d} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(159,205,168,0.5)', fontSize: 12, fontStyle: 'italic' }}>
+        3D — desktop only
+      </div>
+    );
+  }
   return (
     <div className={styles.pieceThumb3d}>
       <Canvas
         camera={{ position: [0, 1, 3], fov: 40 }}
-        gl={{ antialias: true, alpha: true }}
+        gl={{ antialias: true, alpha: true, powerPreference: 'low-power' }}
         style={{ background: 'transparent' }}
       >
         <ambientLight intensity={1.5} />
