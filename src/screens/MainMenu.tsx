@@ -293,23 +293,23 @@ export default function MainMenu() {
         </button>
 
         <button
-          className={`${styles.navItem} ${styles.navPlay} ${playOpen ? styles.navActive : ''}`}
+          className={`${styles.navPlay} ${playOpen ? styles.navPlayOpen : ''}`}
           onClick={playOpen ? closePlay : openPlay}
           aria-label="Jouer"
           aria-expanded={playOpen}
         >
           <div className={styles.playBubble}>
             {playOpen
-              ? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"
-                     strokeLinecap="round" width="18" height="18">
+              ? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
+                     strokeLinecap="round" width="20" height="20">
                   <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
                 </svg>
-              : <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18" aria-hidden>
-                  <polygon points="6,3 21,12 6,21" />
+              : <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20" aria-hidden>
+                  <polygon points="7,3 22,12 7,21" />
                 </svg>
             }
           </div>
-          <span>Jouer</span>
+          <span className={styles.navPlayLabel}>Jouer</span>
         </button>
 
         <button className={styles.navItem} disabled aria-label="Classement">
