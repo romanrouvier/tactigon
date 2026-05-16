@@ -1,0 +1,527 @@
+/* ══════════════════════════════════════════════════════════════
+   PROFILE SCREEN
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── Root ───────────────────────────────────────────────────── */
+.root {
+  min-height: 100svh;
+  background: var(--bg-gradient);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Top header (identical to Factions) ─────────────────────── */
+.topHeader {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.25rem;
+  height: 72px;
+  background: #36494E;
+  border-bottom: 1px solid rgba(159, 205, 168, 0.08);
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.4);
+  flex-shrink: 0;
+}
+
+.headerIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.55);
+  cursor: pointer;
+  transition: color 200ms, background 200ms;
+  flex-shrink: 0;
+}
+.headerIcon:hover {
+  color: var(--gold);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.headerCenter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.headerAvatarSmall {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--gold) 15%, rgba(4, 5, 10, 0.6));
+  border: 1.5px solid color-mix(in srgb, var(--gold) 40%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--gold);
+  font-family: var(--font-heading);
+  box-shadow: 0 0 16px color-mix(in srgb, var(--gold) 22%, transparent);
+}
+
+.headerUsername {
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  color: rgba(255, 255, 255, 0.55);
+  font-family: var(--font-heading);
+  text-transform: uppercase;
+}
+
+/* ── Scroll container ───────────────────────────────────────── */
+.scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.25rem 1rem calc(64px + 1.5rem);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  scrollbar-width: none;
+}
+.scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── Hero card ──────────────────────────────────────────────── */
+.heroCard {
+  background: color-mix(in srgb, var(--gold) 5%, var(--bg-card));
+  border: 1px solid color-mix(in srgb, var(--gold) 18%, transparent);
+  border-radius: 18px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: row;
+  gap: 1.25rem;
+  align-items: center;
+  box-shadow:
+    0 4px 32px rgba(0, 0, 0, 0.4),
+    0 0 40px color-mix(in srgb, var(--gold) 6%, transparent);
+  backdrop-filter: blur(12px);
+}
+
+/* ── Avatar wrapper ─────────────────────────────────────────── */
+.avatarWrap {
+  position: relative;
+  cursor: pointer;
+  flex-shrink: 0;
+  border-radius: 50%;
+}
+.avatarWrap:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
+
+.avatar {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  border: 2px solid var(--gold);
+  box-shadow:
+    0 0 20px color-mix(in srgb, var(--gold) 30%, transparent),
+    0 4px 16px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.avatarImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatarInitial {
+  width: 100%;
+  height: 100%;
+  background: color-mix(in srgb, var(--gold) 15%, #1a2e32);
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--gold);
+  font-family: var(--font-heading);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Camera overlay on hover */
+.avatarOverlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.58);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
+  opacity: 0;
+  transition: opacity 200ms;
+  pointer-events: none;
+}
+.avatarWrap:hover .avatarOverlay {
+  opacity: 1;
+}
+
+.cameraIcon {
+  font-size: 1.3rem;
+  line-height: 1;
+}
+.cameraLabel {
+  font-size: 0.48rem;
+  font-family: var(--font-heading);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #fff;
+  font-weight: 600;
+}
+
+/* ── Hero info ──────────────────────────────────────────────── */
+.heroInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.45rem;
+  min-width: 0;
+}
+
+.heroNameRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.heroName {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: white;
+  font-family: var(--font-heading);
+  line-height: 1.1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.heroNameInput {
+  font-size: 1.4rem;
+  font-weight: 800;
+  font-family: var(--font-heading);
+  color: white;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--gold);
+  outline: none;
+  width: 0;
+  flex: 1;
+  min-width: 0;
+  line-height: 1.1;
+}
+
+.pencilBtn {
+  background: transparent;
+  border: none;
+  color: var(--text-faint);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 0.2rem;
+  border-radius: 6px;
+  flex-shrink: 0;
+  transition: color 180ms;
+}
+.pencilBtn:hover {
+  color: var(--gold);
+}
+
+.heroTitle {
+  font-size: 0.8rem;
+  color: var(--gold);
+  font-style: italic;
+  margin: 0;
+  font-family: var(--font-body);
+}
+
+.levelBadge {
+  display: inline-block;
+  font-size: 0.6rem;
+  font-weight: 700;
+  font-family: var(--font-heading);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  background: rgba(159, 205, 168, 0.15);
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  align-self: flex-start;
+}
+
+.joinDate {
+  font-size: 0.65rem;
+  color: var(--text-faint);
+  margin: 0;
+  font-family: var(--font-body);
+}
+
+/* ── Section title ──────────────────────────────────────────── */
+.sectionTitle {
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold);
+  opacity: 0.75;
+  margin: 0 0 0.65rem 0;
+  font-family: var(--font-heading);
+}
+
+/* ── Stats grid ─────────────────────────────────────────────── */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+
+.statCard {
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 14px;
+  padding: 1rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  backdrop-filter: blur(8px);
+}
+
+.statNum {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--gold);
+  font-family: var(--font-heading);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  display: block;
+}
+
+.statLabel {
+  font-size: 0.5rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  font-family: var(--font-heading);
+  margin-top: 0.3rem;
+  display: block;
+}
+
+/* ── Faction affinity ───────────────────────────────────────── */
+.factionSection {
+  display: flex;
+  flex-direction: column;
+}
+
+.factionRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.factionDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 0 6px currentColor;
+}
+
+.factionName {
+  font-size: 0.62rem;
+  font-family: var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  width: 70px;
+  flex-shrink: 0;
+}
+
+.factionBarTrack {
+  flex: 1;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.factionBarFill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 600ms ease;
+}
+
+.factionPct {
+  font-size: 0.52rem;
+  font-family: var(--font-heading);
+  color: var(--text-faint);
+  width: 32px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* ── Achievements ───────────────────────────────────────────── */
+.achievementsGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.achievement {
+  width: calc(50% - 0.3rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.9rem 0.5rem;
+  background: var(--bg-glass);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 14px;
+  transition: all 220ms;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.achievementUnlocked {
+  border-color: color-mix(in srgb, var(--gold) 55%, transparent);
+  background: color-mix(in srgb, var(--gold) 7%, transparent);
+  box-shadow: 0 0 16px color-mix(in srgb, var(--gold) 15%, transparent);
+}
+
+.achievementLocked {
+  filter: grayscale(0.7);
+  opacity: 0.35;
+}
+
+.lockOverlay {
+  position: absolute;
+  top: 0.4rem;
+  right: 0.5rem;
+  font-size: 0.65rem;
+  line-height: 1;
+}
+
+.achievementIcon {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.achievementLabel {
+  font-size: 0.5rem;
+  font-weight: 600;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  text-align: center;
+  font-family: var(--font-heading);
+}
+
+.achievementDesc {
+  font-size: 0.45rem;
+  color: var(--text-faint);
+  text-align: center;
+  font-family: var(--font-body);
+  font-style: italic;
+  line-height: 1.3;
+}
+
+/* ── Account section ────────────────────────────────────────── */
+.accountCard {
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 14px;
+  overflow: hidden;
+  backdrop-filter: blur(8px);
+}
+
+.accountRow {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.9rem 1rem;
+  cursor: pointer;
+  transition: background 180ms;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+.accountRow:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+.accountRowLast {
+  border-bottom: none;
+}
+.accountRow:hover .editIcon {
+  color: var(--gold);
+}
+
+.accountIcon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(159, 205, 168, 0.10);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--gold);
+  flex-shrink: 0;
+}
+
+.accountInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.accountLabel {
+  font-size: 0.46rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  font-family: var(--font-heading);
+  display: block;
+}
+
+.accountValue {
+  font-size: 0.82rem;
+  color: var(--text-parchment);
+  margin: 0.15rem 0 0;
+  font-family: var(--font-body);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.accountValueInput {
+  font-size: 0.82rem;
+  color: white;
+  font-family: var(--font-body);
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--gold);
+  outline: none;
+  width: 100%;
+  margin-top: 0.15rem;
+  padding: 0;
+}
+
+.editIcon {
+  color: var(--text-faint);
+  flex-shrink: 0;
+  transition: color 180ms;
+  display: block;
+}

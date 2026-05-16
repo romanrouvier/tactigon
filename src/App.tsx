@@ -3,6 +3,7 @@ import Splash    from './screens/Splash';
 import MainMenu  from './screens/MainMenu';
 import Factions  from './screens/Factions';
 import Game      from './screens/Game';
+import Profile   from './screens/Profile';
 import './App.css';
 
 export default function App() {
@@ -13,6 +14,7 @@ export default function App() {
         <Route path="/menu"    element={<MainMenu />} />
         <Route path="/factions" element={<Factions />} />
         <Route path="/game"    element={<Game />}     />
+        <Route path="/profil"  element={<Profile />}  />
         <Route path="*"        element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>

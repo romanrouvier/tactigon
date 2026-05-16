@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import styles from './SharedBottomNav.module.css';
 
 interface Props {
-  activeTab: 'home' | 'factions';
+  activeTab: 'home' | 'factions' | 'profil';
   playOpen: boolean;
   onTogglePlay: () => void;
 }
@@ -74,7 +74,12 @@ export default function SharedBottomNav({ activeTab, playOpen, onTogglePlay }: P
       </button>
 
       {/* Profil */}
-      <button className={styles.navItem} disabled aria-label="Profil">
+      <button
+        className={`${styles.navItem} ${activeTab === 'profil' ? styles.navActive : ''}`}
+        onClick={() => navigate('/profil')}
+        aria-label="Profil"
+        aria-current={activeTab === 'profil' ? 'page' : undefined}
+      >
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"
              strokeLinecap="round" strokeLinejoin="round" width="22" height="22" aria-hidden>
           <circle cx="12" cy="8" r="4" />
