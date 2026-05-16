@@ -1,57 +1,56 @@
-/* ── Google Fonts ─────────────────────────────────────────────────────────── */
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;900&family=Cinzel+Decorative:wght@400;700;900&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap');
-
 /* ── Design Tokens ────────────────────────────────────────────────────────── */
 :root {
-  /* ── Surfaces (dark navy-fantasy) ─────────── */
-  --bg-void:    #060810;
-  --bg-deep:    #080c14;
-  --bg-surface: #0d1120;
-  --bg-card:    #111827;
-  --bg-raised:  #1a2235;
+  /* ── Surfaces ─────────────────────────────── */
+  --bg-void:    #36494E;
+  --bg-deep:    #2e3d42;
+  --bg-surface: #3d5157;
+  --bg-card:    #425860;
+  --bg-raised:  #4a636c;
 
   /* ── Glass surfaces ───────────────────────── */
-  --bg-glass:     rgba(255, 255, 255, 0.04);
-  --bg-glass-mid: rgba(255, 255, 255, 0.07);
+  --bg-glass:     rgba(255, 255, 255, 0.06);
+  --bg-glass-mid: rgba(255, 255, 255, 0.10);
 
-  /* ── Gold palette ─────────────────────────── */
-  --gold:        #c9a84c;
-  --gold-bright: #e8c878;
-  --gold-light:  #f0d890;
-  --gold-dim:    #7a6030;
-  --gold-glow:   rgba(201, 168, 76, 0.28);
-  --gold-border: rgba(201, 168, 76, 0.18);
+  /* ── Primary palette (#9FCDA8) ────────────── */
+  --gold:        #9FCDA8;
+  --gold-bright: #b8ddbf;
+  --gold-light:  #d0ecd5;
+  --gold-dim:    #5a8a63;
+  --gold-glow:   rgba(159, 205, 168, 0.28);
+  --gold-border: rgba(159, 205, 168, 0.18);
 
-  /* ── Gradient gold ────────────────────────── */
-  --grad-gold:        linear-gradient(135deg, #8a6030 0%, #c9a84c 35%, #f0d890 55%, #c9a84c 75%, #8a6030 100%);
-  --grad-gold-subtle: linear-gradient(135deg, #7a6030 0%, #c9a84c 100%);
-  --grad-gold-btn:    linear-gradient(135deg, rgba(201,168,76,0.18) 0%, rgba(201,168,76,0.08) 100%);
+  /* ── Secondary palette (#7DC2A5) ──────────── */
+  --secondary:       #7DC2A5;
+  --secondary-bright:#9fd4bd;
+  --secondary-dim:   #4a8a72;
 
-  /* ── Accent (mystical purple/indigo depth) ── */
-  --accent-purple: rgba(120, 80, 200, 0.22);
-  --accent-blue:   rgba(60, 90, 180, 0.15);
+  /* ── Gradients ────────────────────────────── */
+  --grad-gold:        linear-gradient(135deg, #5a8a63 0%, #9FCDA8 35%, #d0ecd5 55%, #9FCDA8 75%, #5a8a63 100%);
+  --grad-gold-subtle: linear-gradient(135deg, #5a8a63 0%, #9FCDA8 100%);
+  --grad-gold-btn:    linear-gradient(135deg, rgba(159,205,168,0.18) 0%, rgba(159,205,168,0.08) 100%);
 
   /* ── Text ─────────────────────────────────── */
-  --text-parchment: #f0e8d8;
-  --text-muted:     #8a7a68;
-  --text-faint:     #504540;
+  --text-parchment: #ffffff;
+  --text-muted:     rgba(255,255,255,0.60);
+  --text-faint:     rgba(255,255,255,0.30);
+  --text-on-primary: #1E3438;
 
   /* ── Alert colours ────────────────────────── */
   --red-blood:  #8b1a1a;
   --red-bright: #c0302e;
-  --green-safe: rgba(90, 200, 80, 0.22);
+  --green-safe: rgba(159, 205, 168, 0.22);
   --red-danger: rgba(200, 60, 40, 0.28);
 
   /* ── Borders ──────────────────────────────── */
-  --border-subtle: rgba(201, 168, 76, 0.08);
-  --border-mid:    rgba(201, 168, 76, 0.22);
-  --border-strong: rgba(201, 168, 76, 0.50);
-  --border-glass:  rgba(255, 255, 255, 0.07);
+  --border-subtle: rgba(159, 205, 168, 0.08);
+  --border-mid:    rgba(159, 205, 168, 0.22);
+  --border-strong: rgba(159, 205, 168, 0.50);
+  --border-glass:  rgba(255, 255, 255, 0.10);
 
   /* ── Fonts ────────────────────────────────── */
-  --font-display: 'Cinzel Decorative', 'Palatino Linotype', serif;
-  --font-heading: 'Cinzel', 'Palatino Linotype', serif;
-  --font-body:    'Crimson Pro', 'Georgia', serif;
+  --font-display: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-heading: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-body:    system-ui, -apple-system, 'Segoe UI', sans-serif;
 
   /* ── Shadows ──────────────────────────────── */
   --shadow-card:  0 8px 32px rgba(0,0,0,0.8), 0 2px 8px rgba(0,0,0,0.5);
