@@ -5,6 +5,7 @@ import styles from './PlayOverlay.module.css';
 
 type RankType = 'normal' | 'ranked';
 type GameMode = '2' | '4';
+type TimeSetting = 0 | 180 | 600; // 0 = no limit, 180 = 3 min, 600 = 10 min
 
 const FACTION_TAGS: Record<number, string[]> = {
   1: ['Mobilité', 'Diagonal'],
@@ -69,8 +70,9 @@ function FactionPicker({
 export default function PlayOverlay({ onClose }: { onClose: () => void }) {
   const navigate = useNavigate();
 
-  const [rankType,  setRankType]  = useState<RankType>('normal');
-  const [gameMode,  setGameMode]  = useState<GameMode>('2');
+  const [rankType,   setRankType]   = useState<RankType>('normal');
+  const [gameMode,   setGameMode]   = useState<GameMode>('2');
+  const [timeSetting, setTimeSetting] = useState<TimeSetting>(180);
   const [factions1, setFactions1] = useState<number | null>(null);
   const [factions2, setFactions2] = useState<number | null>(null);
   const [factions3, setFactions3] = useState<number | null>(null);
@@ -96,7 +98,7 @@ export default function PlayOverlay({ onClose }: { onClose: () => void }) {
     const factionIds = Object.fromEntries(
       chosen.map((fid, i) => [i + 1, fid])
     ) as Record<number, number>;
-    navigate('/game', { state: { factionIds, players: playerCount, ranked: rankType === 'ranked' } });
+    navigate('/game', { state: { factionIds, players: playerCount, ranked: rankType === 'ranked', timePerPlayer: timeSetting } });
   }
 
   const takenFor = (excludeSlot: number) =>
@@ -179,6 +181,29 @@ export default function PlayOverlay({ onClose }: { onClose: () => void }) {
                 <span className={styles.modeTitle}>Choc</span>
                 <span className={styles.modeDesc}>1v1v1v1 · Grille 13×13</span>
               </button>
+            </div>
+          </section>
+
+          <div className={styles.divider} />
+
+          {/* Temps par joueur */}
+          <section className={styles.section}>
+            <p className={styles.sectionLabel}>Temps par joueur</p>
+            <div className={styles.timeRow}>
+              {([
+                { value: 0,   label: '∞',    sub: 'Sans limite' },
+                { value: 180, label: '3 min', sub: '3 min / joueur' },
+                { value: 600, label: '10 min', sub: '10 min / joueur' },
+              ] as { value: TimeSetting; label: string; sub: string }[]).map(opt => (
+                <button
+                  key={opt.value}
+                  className={`${styles.timeBtn} ${timeSetting === opt.value ? styles.timeBtnActive : ''}`}
+                  onClick={() => setTimeSetting(opt.value)}
+                >
+                  <span className={styles.timeBtnLabel}>{opt.label}</span>
+                  <small>{opt.sub}</small>
+                </button>
+              ))}
             </div>
           </section>
 

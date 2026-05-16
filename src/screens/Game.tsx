@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { factions } from '../data/factions';
 import { board7x8 } from '../data/board7x8';
 import { board13x13 } from '../data/board13x13';
@@ -15,6 +15,13 @@ import type { BoardState, Move, PlayerId, Faction } from '../game/types';
 interface LocationState {
   factionIds: Record<PlayerId, number>;
   players: 2 | 4;
+  timePerPlayer?: number; // seconds, 0 = no limit
+}
+
+function formatTime(seconds: number): string {
+  const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+  const s = (seconds % 60).toString().padStart(2, '0');
+  return `${m}:${s}`;
 }
 
 function buildFactionMap(
@@ -34,6 +41,7 @@ export default function Game() {
 
   const players = locState?.players ?? 2;
   const factionIds: Record<PlayerId, number> = locState?.factionIds ?? { 1: 1, 2: 2, 3: 3, 4: 4 };
+  const timePerPlayer = locState?.timePerPlayer ?? 0; // 0 = no limit
   const factionMap = useMemo(() => buildFactionMap(factionIds, players), []);
   const activePlayers: PlayerId[] = players === 4 ? [1, 2, 3, 4] : [1, 2];
   const board = players === 4 ? board13x13 : board7x8;
@@ -43,6 +51,43 @@ export default function Game() {
   );
   const [selectedPieceId, setSelectedPieceId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'2D' | '3D'>('3D');
+
+  // ── Per-player timers ──────────────────────────────────────────────────────
+  const [timers, setTimers] = useState<Record<PlayerId, number>>(() => {
+    const init = {} as Record<PlayerId, number>;
+    for (const pid of (players === 4 ? [1, 2, 3, 4] : [1, 2]) as PlayerId[]) {
+      init[pid] = timePerPlayer;
+    }
+    return init;
+  });
+
+  // Ref so the interval always reads the latest currentPlayer without re-creating
+  const currentPlayerRef = useRef(gameState.currentPlayer);
+  currentPlayerRef.current = gameState.currentPlayer;
+
+  // Countdown: tick once per second, decrement active player's clock
+  useEffect(() => {
+    if (timePerPlayer === 0 || gameState.winner) return;
+    const id = setInterval(() => {
+      setTimers(prev => {
+        const pid = currentPlayerRef.current;
+        const next = Math.max(0, (prev[pid] ?? 0) - 1);
+        return { ...prev, [pid]: next };
+      });
+    }, 1000);
+    return () => clearInterval(id);
+  }, [timePerPlayer, gameState.winner]);
+
+  // When a player's clock hits 0, they lose
+  const timedOutPlayer = timePerPlayer > 0
+    ? (activePlayers as PlayerId[]).find(pid => (timers[pid] ?? 1) === 0)
+    : undefined;
+
+  useEffect(() => {
+    if (!timedOutPlayer || gameState.winner) return;
+    const winner = (activePlayers as PlayerId[]).find(p => p !== timedOutPlayer) ?? null;
+    setGameState(prev => ({ ...prev, winner }));
+  }, [timedOutPlayer, gameState.winner]);
 
   const selectedPiece = gameState.pieces.find(p => p.id === selectedPieceId) ?? null;
 
@@ -87,30 +132,44 @@ export default function Game() {
         {!gameState.winner ? (
           <div className={styles.turn}>
             <span className={styles.turnDot} style={{ background: currentFaction?.color }} />
-            Joueur {gameState.currentPlayer} — {currentFaction?.name}
-            {players === 4 && (
-              <span className={styles.playerCount}>
-                {activePlayers.map(pid => (
-                  <span
-                    key={pid}
-                    className={`${styles.pip} ${pid === gameState.currentPlayer ? styles.pipActive : ''}`}
-                    style={{ background: factionMap[pid]?.color ?? '#444' }}
-                    title={`J${pid} — ${factionMap[pid]?.name}`}
-                  />
-                ))}
-              </span>
-            )}
+            J{gameState.currentPlayer} — {currentFaction?.name.split('—')[1]?.trim() ?? currentFaction?.name}
           </div>
         ) : (
           <div className={styles.winner} style={{ color: winnerFaction?.color }}>
-            🏆 Joueur {gameState.winner} gagne — {winnerFaction?.name}
+            🏆 J{gameState.winner} — {winnerFaction?.name.split('—')[1]?.trim() ?? winnerFaction?.name}
+          </div>
+        )}
+
+        {/* Per-player timers */}
+        {timePerPlayer > 0 && (
+          <div className={styles.timers}>
+            {(activePlayers as PlayerId[]).map(pid => {
+              const secs = timers[pid] ?? 0;
+              const isActive = pid === gameState.currentPlayer && !gameState.winner;
+              const isLow    = secs <= 30;
+              return (
+                <div
+                  key={pid}
+                  className={[
+                    styles.timerBadge,
+                    isActive ? styles.timerBadgeActive : '',
+                    isLow    ? styles.timerBadgeLow    : '',
+                  ].filter(Boolean).join(' ')}
+                  style={{ '--player-color': factionMap[pid]?.color ?? '#9fcda8' } as React.CSSProperties}
+                >
+                  <span className={styles.timerDot} />
+                  <span className={styles.timerTime}>{formatTime(secs)}</span>
+                  <span className={styles.timerLabel}>J{pid}</span>
+                </div>
+              );
+            })}
           </div>
         )}
 
         {/* Eliminated players indicator (4-player) */}
         {players === 4 && !gameState.winner && (
           <div className={styles.eliminated}>
-            {activePlayers
+            {(activePlayers as PlayerId[])
               .filter(pid => !gameState.pieces.some(p => p.owner === pid && p.type === 'king'))
               .map(pid => (
                 <span key={pid} className={styles.dead} style={{ color: factionMap[pid]?.color }}>

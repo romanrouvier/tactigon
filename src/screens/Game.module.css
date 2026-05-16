@@ -133,6 +133,71 @@
   box-shadow: 0 0 8px currentColor;
 }
 
+/* ── Per-player timers ──────────────────────────────────────── */
+.timers {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.timerBadge {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.6rem 0.3rem 0.5rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  transition: all 250ms;
+}
+
+.timerBadgeActive {
+  border-color: color-mix(in srgb, var(--player-color) 60%, transparent);
+  background: color-mix(in srgb, var(--player-color) 10%, transparent);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--player-color) 25%, transparent);
+}
+
+.timerBadgeLow .timerTime {
+  color: #ff6b6b !important;
+  animation: timerPulse 0.8s ease-in-out infinite;
+}
+
+@keyframes timerPulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.5; }
+}
+
+.timerDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--player-color);
+  flex-shrink: 0;
+}
+
+.timerBadgeActive .timerDot {
+  box-shadow: 0 0 6px var(--player-color);
+  animation: dotPulse 2s ease-in-out infinite;
+}
+
+.timerTime {
+  font-family: var(--font-heading);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--text-parchment);
+  font-variant-numeric: tabular-nums;
+  min-width: 2.8ch;
+}
+
+.timerLabel {
+  font-family: var(--font-heading);
+  font-size: 0.46rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
 /* Eliminated players */
 .eliminated {
   display: flex;
