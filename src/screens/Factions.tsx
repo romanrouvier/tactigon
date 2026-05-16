@@ -1,5 +1,7 @@
-import { useState } from 'react';
+import { useState, Suspense, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Canvas, useFrame } from '@react-three/fiber';
+import { useGLTF, OrbitControls, Stage } from '@react-three/drei';
 import { factions } from '../data/factions';
 import styles from './Factions.module.css';
 import type { Faction, FactionPiecePattern } from '../game/types';
@@ -62,6 +64,35 @@ const FACTION_META: Record<number, {
 };
 
 
+// ── 3D GLB viewer (HD model for faction inspector) ────────────────────────────
+function GLBModel({ url }: { url: string }) {
+  const { scene } = useGLTF(url);
+  const cloned = useMemo(() => scene.clone(true), [scene]);
+  useFrame((_, delta) => { cloned.rotation.y += delta * 0.6; });
+  return <primitive object={cloned} />;
+}
+
+function GLBPieceThumb({ url }: { url: string }) {
+  return (
+    <div className={styles.pieceThumb3d}>
+      <Canvas
+        camera={{ position: [0, 1, 3], fov: 40 }}
+        gl={{ antialias: true, alpha: true }}
+        style={{ background: 'transparent' }}
+      >
+        <ambientLight intensity={1.5} />
+        <directionalLight position={[3, 6, 4]} intensity={2} />
+        <Suspense fallback={null}>
+          <Stage environment="city" intensity={0.4} adjustCamera={false}>
+            <GLBModel url={url} />
+          </Stage>
+        </Suspense>
+        <OrbitControls enableZoom={false} enablePan={false} autoRotate={false} />
+      </Canvas>
+    </div>
+  );
+}
+
 // ── SVG shapes ────────────────────────────────────────────────────────────────
 function PieceShapeSVG({ type }: { type: string }) {
   switch (type) {
@@ -75,6 +106,9 @@ function PieceShapeSVG({ type }: { type: string }) {
 }
 
 function PieceThumb({ piece, color }: { piece: FactionPiecePattern; color: string }) {
+  if (piece.glbUrlHD) {
+    return <GLBPieceThumb url={piece.glbUrlHD} />;
+  }
   if (piece.imageUrl) {
     return (
       <div className={styles.pieceThumb}>

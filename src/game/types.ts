@@ -63,8 +63,8 @@ export interface FactionPiecePattern {
   pattern: MovementPattern;
   /** Optional image to render instead of the default SVG shape (2D board) */
   imageUrl?: string;
-  /** Optional FBX model to render in the 3D board */
-  fbxUrl?: string;
+  /** Optional GLB model for the faction inspector (full quality) */
+  glbUrlHD?: string;
 }
 
 export interface Faction {
