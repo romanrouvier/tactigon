@@ -639,62 +639,92 @@
   opacity: 0.7;
 }
 
-/* ── Pieces ─────────────────────────────────────────────────── */
-.piecesGrid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0.75rem;
-}
-
-@media (min-width: 500px) {
-  .piecesGrid { grid-template-columns: repeat(3, 1fr); }
-}
-@media (min-width: 720px) {
-  .piecesGrid { grid-template-columns: repeat(4, 1fr); }
-}
-
-.pieceCard {
+/* ── Pieces — vertical list (one row per piece) ─────────────── */
+.pieceList {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 1rem 0.75rem;
-  background: var(--bg-glass);
-  border: 1px solid var(--border-glass);
-  border-radius: 14px;
-  backdrop-filter: blur(12px);
-  position: relative;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3), var(--shadow-inset);
-  transition: border-color 220ms, box-shadow 220ms;
-}
-.pieceCard:hover {
-  border-color: color-mix(in srgb, var(--faction-color, var(--gold)) 25%, transparent);
-  box-shadow:
-    0 6px 24px rgba(0, 0, 0, 0.4),
-    0 0 16px color-mix(in srgb, var(--faction-color, var(--gold)) 12%, transparent);
-}
-/* Faction color top accent */
-.pieceCard::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 10%; right: 10%;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--faction-color, var(--gold)), transparent);
-  border-radius: 0 0 2px 2px;
-  opacity: 0.55;
+  gap: 0.65rem;
 }
 
+.pieceRow {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 14px;
+  padding: 0.85rem 1rem;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 220ms, background 220ms;
+}
+.pieceRow:hover {
+  background: rgba(255, 255, 255, 0.055);
+  border-color: color-mix(in srgb, var(--faction-color, var(--gold)) 28%, transparent);
+}
+/* Left colour accent bar */
+.pieceRow::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--faction-color, var(--gold));
+  border-radius: 3px 0 0 3px;
+  opacity: 0.80;
+}
+/* Subtle faction glow behind the thumb */
+.pieceRow::after {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 90px;
+  background: linear-gradient(90deg,
+    color-mix(in srgb, var(--faction-color, var(--gold)) 12%, transparent),
+    transparent);
+  pointer-events: none;
+}
+
+.pieceRowThumb {
+  width: 72px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+}
+
+.pieceRowInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  min-width: 0;
+}
+
+.pieceRowName {
+  font-family: var(--font-heading);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--faction-color, var(--gold));
+  margin: 0;
+  text-shadow: 0 0 12px color-mix(in srgb, var(--faction-color, var(--gold)) 40%, transparent);
+}
+
+/* Piece thumbnail (SVG or image inside pieceRowThumb) */
 .pieceThumb {
-  width: 52px;
-  height: 56px;
+  width: 64px;
+  height: 68px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .pieceThumb3d {
-  width: 100%;
-  height: 140px;
+  width: 72px;
+  height: 72px;
   border-radius: 10px;
   overflow: hidden;
 }
@@ -705,23 +735,15 @@
   filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.9));
 }
 .pieceThumbSvg {
-  width: 44px;
-  height: 44px;
+  width: 52px;
+  height: 52px;
   fill: var(--faction-color, var(--gold));
-  stroke: rgba(0, 0, 0, 0.55);
-  stroke-width: 1.5;
-  opacity: 0.90;
-  filter: drop-shadow(0 0 5px var(--faction-color, var(--gold)));
-}
-
-.pieceName {
-  font-family: var(--font-heading);
-  font-size: 0.55rem;
-  letter-spacing: 0.10em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  text-align: center;
-  margin: 0;
+  stroke: rgba(0, 0, 0, 0.45);
+  stroke-width: 1.2;
+  opacity: 0.92;
+  filter:
+    drop-shadow(0 0 8px var(--faction-color, var(--gold)))
+    drop-shadow(0 2px 6px rgba(0, 0, 0, 0.8));
 }
 
 /* ── Pattern mini-grid ──────────────────────────────────────── */

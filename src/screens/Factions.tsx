@@ -336,22 +336,6 @@ function FactionDetail({ faction, onBack, onPlay }: {
           <div className={styles.detailHeroColorBar} />
         </section>
 
-        {/* Tags */}
-        <section className={styles.detailSection}>
-          <p className={styles.sectionLabel}>Caractéristiques</p>
-          <div className={styles.tagRow}>
-            {meta.tags.map(tag => (
-              <span
-                key={tag}
-                className={styles.tag}
-                style={{ '--faction-color': faction.color } as React.CSSProperties}
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-        </section>
-
         {/* Description */}
         <section className={styles.detailSection}>
           <p className={styles.sectionLabel}>Description</p>
@@ -379,16 +363,20 @@ function FactionDetail({ faction, onBack, onPlay }: {
         {/* Pieces */}
         <section className={styles.detailSection}>
           <p className={styles.sectionLabel}>Pièces · {faction.pieces.length} types</p>
-          <div className={styles.piecesGrid}>
+          <div className={styles.pieceList}>
             {faction.pieces.map(fp => (
               <div
                 key={fp.type}
-                className={styles.pieceCard}
+                className={styles.pieceRow}
                 style={{ '--faction-color': faction.color } as React.CSSProperties}
               >
-                <PieceThumb piece={fp} color={faction.color} />
-                <p className={styles.pieceName}>{PIECE_LABELS[fp.type] ?? fp.type}</p>
-                <PatternGrid piece={fp} color={faction.color} />
+                <div className={styles.pieceRowThumb}>
+                  <PieceThumb piece={fp} color={faction.color} />
+                </div>
+                <div className={styles.pieceRowInfo}>
+                  <p className={styles.pieceRowName}>{PIECE_LABELS[fp.type] ?? fp.type}</p>
+                  <PatternGrid piece={fp} color={faction.color} />
+                </div>
               </div>
             ))}
           </div>
