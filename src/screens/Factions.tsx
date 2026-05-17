@@ -1,7 +1,7 @@
 import { useState, Suspense, useRef, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
-import { useGLTF, OrbitControls, Stage, useAnimations } from '@react-three/drei';
+import { useGLTF, OrbitControls, Stage, useAnimations, Html } from '@react-three/drei';
 import { factions } from '../data/factions';
 import PlayOverlay from '../components/PlayOverlay';
 import SharedBottomNav from '../components/SharedBottomNav';
@@ -67,7 +67,6 @@ const FACTION_META: Record<number, {
 
 
 // ── 3D GLB viewer (HD model for faction inspector) ────────────────────────────
-const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
 function GLBModel({ url }: { url: string }) {
   const groupRef = useRef<THREE.Group>(null!);
@@ -94,14 +93,6 @@ function GLBModel({ url }: { url: string }) {
 }
 
 function GLBPieceThumb({ url }: { url: string }) {
-  // Mobile: skip WebGL Canvas to avoid context limit and GPU memory crash
-  if (isMobile) {
-    return (
-      <div className={styles.pieceThumb3d} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(159,205,168,0.5)', fontSize: 12, fontStyle: 'italic' }}>
-        3D — desktop only
-      </div>
-    );
-  }
   return (
     <div className={styles.pieceThumb3d}>
       <Canvas
@@ -111,7 +102,18 @@ function GLBPieceThumb({ url }: { url: string }) {
       >
         <ambientLight intensity={1.5} />
         <directionalLight position={[3, 6, 4]} intensity={2} />
-        <Suspense fallback={null}>
+        <Suspense fallback={
+          <Html center>
+            <div style={{
+              width: 28,
+              height: 28,
+              borderRadius: '50%',
+              border: '2px solid rgba(255,255,255,0.12)',
+              borderTopColor: '#9fcda8',
+              animation: 'spin 1s linear infinite',
+            }} />
+          </Html>
+        }>
           <Stage environment="city" intensity={0.4} adjustCamera={false}>
             <GLBModel url={url} />
           </Stage>

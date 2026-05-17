@@ -2,6 +2,8 @@
    FACTIONS — Mobile-first master-detail
    ══════════════════════════════════════════════════════════════ */
 
+@keyframes spin { to { transform: rotate(360deg); } }
+
 /* ── Shared top header (identical to MainMenu) ──────────────── */
 .topHeader {
   position: sticky;
