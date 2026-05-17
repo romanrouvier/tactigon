@@ -1,5 +1,7 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
+import { useGLTF } from '@react-three/drei';
+import * as THREE from 'three';
 import { factions } from '../data/factions';
 import { board7x8 } from '../data/board7x8';
 import { board13x13 } from '../data/board13x13';
@@ -46,11 +48,46 @@ export default function Game() {
   const activePlayers: PlayerId[] = players === 4 ? [1, 2, 3, 4] : [1, 2];
   const board = players === 4 ? board13x13 : board7x8;
 
+  // Collect unique GLB URLs from all active factions
+  const glbUrls = useMemo(() => {
+    const seen = new Set<string>();
+    for (const faction of Object.values(factionMap))
+      for (const fp of faction.pieces)
+        if (fp.glbUrlHD) seen.add(fp.glbUrlHD);
+    return [...seen];
+  }, [factionMap]);
+
+  // Kick off downloads before the Canvas mounts (idempotent — safe at render time)
+  glbUrls.forEach(url => useGLTF.preload(url));
+
   const [gameState, setGameState] = useState<BoardState>(() =>
     setupBoard(board, factionMap, activePlayers, startTemplate)
   );
   const [selectedPieceId, setSelectedPieceId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'2D' | '3D'>('3D');
+
+  // Loading gate: skip entirely when no GLBs are in the game
+  const [isLoaded, setIsLoaded] = useState(() => glbUrls.length === 0);
+
+  useEffect(() => {
+    if (glbUrls.length === 0) return;
+    let settled = false;
+    const done = () => { if (!settled) { settled = true; setIsLoaded(true); } };
+
+    // THREE.DefaultLoadingManager fires onLoad when all pending loads finish
+    const prev = THREE.DefaultLoadingManager.onLoad;
+    THREE.DefaultLoadingManager.onLoad = () => { done(); THREE.DefaultLoadingManager.onLoad = prev; };
+
+    // If assets are already cached, onLoad never fires — use a hard timeout fallback
+    let hardTimeout: ReturnType<typeof setTimeout>;
+    const raf = requestAnimationFrame(() => { hardTimeout = setTimeout(done, 15_000); });
+
+    return () => {
+      cancelAnimationFrame(raf);
+      clearTimeout(hardTimeout);
+      settled = true; // prevent stale setState if component unmounts mid-load
+    };
+  }, []); // runs once; glbUrls is stable for the lifetime of the game
 
   // ── Per-player timers ──────────────────────────────────────────────────────
   const [timers, setTimers] = useState<Record<PlayerId, number>>(() => {
@@ -181,7 +218,15 @@ export default function Game() {
       </header>
 
       <div className={`${styles.boardWrap} ${viewMode === '2D' ? styles.boardWrap2D : ''}`}>
-        {viewMode === '3D' ? (
+        {viewMode === '3D' && !isLoaded ? (
+          <div className={styles.loadingScreen}>
+            <div
+              className={styles.loadingSpinner}
+              style={{ borderTopColor: currentFaction?.color ?? '#9fcda8' }}
+            />
+            <p className={styles.loadingText}>Chargement en cours</p>
+          </div>
+        ) : viewMode === '3D' ? (
           <Board3D
             gameState={gameState}
             selectedPieceId={selectedPieceId}

@@ -507,7 +507,7 @@ function BoardScene({
         color="#ffffff"
         intensity={3.5}
         castShadow
-        shadow-mapSize={[2048, 2048]}
+        shadow-mapSize={isMobile ? [1024, 1024] : [2048, 2048]}
         shadow-camera-far={60}
         shadow-camera-left={-18}
         shadow-camera-right={18}
