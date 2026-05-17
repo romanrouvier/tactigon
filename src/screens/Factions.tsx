@@ -1,6 +1,7 @@
-import { useState, Suspense, useMemo } from 'react';
+import { useState, Suspense, useMemo, useRef, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { useGLTF, OrbitControls, Stage } from '@react-three/drei';
+import * as THREE from 'three';
+import { useGLTF, OrbitControls, Stage, useAnimations } from '@react-three/drei';
 import { factions } from '../data/factions';
 import PlayOverlay from '../components/PlayOverlay';
 import SharedBottomNav from '../components/SharedBottomNav';
@@ -69,10 +70,27 @@ const FACTION_META: Record<number, {
 const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
 function GLBModel({ url }: { url: string }) {
-  const { scene } = useGLTF(url);
-  const cloned = useMemo(() => scene.clone(true), [scene]);
-  useFrame((_, delta) => { cloned.rotation.y += delta * 0.6; });
-  return <primitive object={cloned} />;
+  const groupRef = useRef<THREE.Group>(null!);
+  const { scene, animations } = useGLTF(url);
+  const { actions } = useAnimations(animations, groupRef);
+
+  // Play idle animation on mount
+  useEffect(() => {
+    if (actions['Walking']) {
+      actions['Walking']!.reset().play();
+    }
+  }, [actions]);
+
+  // Slow continuous rotation for the faction preview
+  useFrame((_, delta) => {
+    if (groupRef.current) groupRef.current.rotation.y += delta * 0.6;
+  });
+
+  return (
+    <group ref={groupRef}>
+      <primitive object={scene} />
+    </group>
+  );
 }
 
 function GLBPieceThumb({ url }: { url: string }) {

@@ -93,6 +93,7 @@ export const factions: Faction[] = [
       },
       {
         type: 'inter1',
+        glbUrlHD: '/Meshy_AI_Meshy_Merged_Animations.glb',
         // Large cross: can flyover intermediates, acts on extremities + adjacent lateral
         pattern: {
           targets: [
@@ -144,7 +145,6 @@ export const factions: Faction[] = [
       },
       {
         type: 'king',
-        glbUrlHD: '/king_sentinelle.glb',
         pattern: {
           targets: [
             { dx: -1, dy: -1 }, { dx: 0, dy: -1 }, { dx: 1, dy: -1 },

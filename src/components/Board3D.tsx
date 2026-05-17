@@ -6,8 +6,8 @@
  * Player 1 starts near the camera (high Z); Player 2 is far (low Z).
  */
 import { Canvas, useFrame } from '@react-three/fiber';
-import { Component, useEffect, useMemo, useRef, type ReactNode } from 'react';
-import { OrbitControls } from '@react-three/drei';
+import { Component, Suspense, useEffect, useMemo, useRef, type ReactNode } from 'react';
+import { OrbitControls, useGLTF, useAnimations } from '@react-three/drei';
 import * as THREE from 'three';
 import type { BoardState, Faction, FactionPiecePattern, Move, Piece } from '../game/types';
 
@@ -30,6 +30,9 @@ const C_RING_EM    = '#991008';
 
 // Background colour — light blue-white sky
 const BG_COLOR = '#ddeeff';
+
+// ─── Mobile detection (lower DPR to halve fill rate on small GPUs) ───────────
+const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
 // ─── Error boundary (contains 3D render crashes) ─────────────────────────────
 interface EBState { hasError: boolean }
@@ -183,8 +186,95 @@ function PieceShapes({ type, mat, matGlow }: {
   }
 }
 
-// ─── Animated piece ───────────────────────────────────────────────────────────
-function Piece3D({
+// ─── GLB-animated piece (for pieces that have a glbUrlHD asset) ───────────────
+function GLBPiece3D({
+  url,
+  piece,
+  isSelected,
+  isCurrentPlayer,
+}: {
+  url: string;
+  piece: Piece;
+  isSelected: boolean;
+  isCurrentPlayer: boolean;
+}) {
+  const outerRef = useRef<THREE.Group>(null!);
+  const innerRef = useRef<THREE.Group>(null!);
+  const { scene, animations } = useGLTF(url);
+  const { actions, mixer } = useAnimations(animations, innerRef);
+
+  const IDLE   = 'Walking';
+  const ATTACK = 'Basic_Jump';
+
+  const prevPos     = useRef({ x: piece.position.x, y: piece.position.y });
+  const attackEnd   = useRef(0);
+  const isAttacking = useRef(false);
+
+  // Freeze mixer for idle pieces (not selected, not current player's turn).
+  // This cuts mixer CPU cost to near-zero for all but 1–2 active pieces.
+  const isActive = isSelected || isCurrentPlayer;
+  useEffect(() => {
+    mixer.timeScale = isActive ? 1 : 0;
+  }, [mixer, isActive]);
+
+  // Play idle on mount / when animation actions become available
+  useEffect(() => {
+    if (actions[IDLE]) actions[IDLE]!.reset().play();
+  }, [actions]);
+
+  // Detect piece position change → trigger attack animation
+  useEffect(() => {
+    const { x, y } = piece.position;
+    if (prevPos.current.x !== x || prevPos.current.y !== y) {
+      prevPos.current = { x, y };
+      if (actions[ATTACK] && actions[IDLE]) {
+        actions[IDLE]!.fadeOut(0.15);
+        const atk = actions[ATTACK]!;
+        atk.reset().setLoop(THREE.LoopOnce, 1).fadeIn(0.15).play();
+        atk.clampWhenFinished = true;
+        attackEnd.current   = performance.now() + 1500;
+        isAttacking.current = true;
+        // Make sure mixer is running during attack even if it was frozen
+        mixer.timeScale = 1;
+      }
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [piece.position.x, piece.position.y, actions, mixer]);
+
+  useFrame(({ clock }) => {
+    if (!outerRef.current) return;
+
+    // Return to idle once the attack window expires
+    if (isAttacking.current && performance.now() > attackEnd.current) {
+      isAttacking.current = false;
+      if (actions[ATTACK]) actions[ATTACK]!.fadeOut(0.2);
+      if (actions[IDLE])   actions[IDLE]!.reset().fadeIn(0.2).play();
+      // Re-apply freeze if piece is no longer active
+      if (!isActive) mixer.timeScale = 0;
+    }
+
+    // Bobbing — skip for frozen pieces to save CPU
+    if (!isActive && !isAttacking.current) return;
+    const t     = clock.getElapsedTime();
+    const phase = piece.position.x * 0.8 + piece.position.y * 1.3;
+    const amp   = isSelected ? 0.09 : 0.022;
+    const speed = isSelected ? 2.3  : 1.1;
+    outerRef.current.position.y = PIECE_Y + Math.sin(t * speed + phase) * amp;
+    if (isSelected) outerRef.current.rotation.y += 0.016;
+  });
+
+  return (
+    <group ref={outerRef} position={[0, PIECE_Y, 0]}>
+      {/* scale=0.35 fits Meshy.ai default export size into the 0.9-unit tile — adjust if needed */}
+      <group ref={innerRef} scale={0.35}>
+        <primitive object={scene} />
+      </group>
+    </group>
+  );
+}
+
+// ─── Procedural-geometry animated piece ──────────────────────────────────────
+function ProceduralPiece3D({
   piece,
   faction,
   isSelected,
@@ -192,7 +282,6 @@ function Piece3D({
 }: {
   piece: Piece;
   faction: Faction;
-  factionPiece: FactionPiecePattern | undefined;
   isSelected: boolean;
   isCurrentPlayer: boolean;
 }) {
@@ -252,6 +341,50 @@ function Piece3D({
     <group ref={groupRef} position={[0, PIECE_Y, 0]}>
       <PieceShapes type={piece.type} mat={mat} matGlow={matGlow} />
     </group>
+  );
+}
+
+// ─── Piece dispatcher: GLB asset or procedural geometry ──────────────────────
+function Piece3D({
+  piece,
+  faction,
+  factionPiece,
+  isSelected,
+  isCurrentPlayer,
+}: {
+  piece: Piece;
+  faction: Faction;
+  factionPiece: FactionPiecePattern | undefined;
+  isSelected: boolean;
+  isCurrentPlayer: boolean;
+}) {
+  if (factionPiece?.glbUrlHD) {
+    const fallback = (
+      <ProceduralPiece3D
+        piece={piece}
+        faction={faction}
+        isSelected={isSelected}
+        isCurrentPlayer={isCurrentPlayer}
+      />
+    );
+    return (
+      <Suspense fallback={fallback}>
+        <GLBPiece3D
+          url={factionPiece.glbUrlHD}
+          piece={piece}
+          isSelected={isSelected}
+          isCurrentPlayer={isCurrentPlayer}
+        />
+      </Suspense>
+    );
+  }
+  return (
+    <ProceduralPiece3D
+      piece={piece}
+      faction={faction}
+      isSelected={isSelected}
+      isCurrentPlayer={isCurrentPlayer}
+    />
   );
 }
 
@@ -472,8 +605,8 @@ export default function Board3D({ gameState, selectedPieceId, legalMoves, onCell
     >
       <Canvas
         shadows
-        dpr={[1, 2]}
-        gl={{ antialias: true, alpha: false }}
+        dpr={isMobile ? 1 : [1, 2]}
+        gl={{ antialias: !isMobile, alpha: false }}
         camera={{ position: [0, camY, camZ], fov: 46, near: 0.1, far: 120 }}
         style={{ width: '100%', height: '100%', display: 'block', background: BG_COLOR }}
       >
@@ -501,3 +634,5 @@ export default function Board3D({ gameState, selectedPieceId, legalMoves, onCell
     </Board3DErrorBoundary>
   );
 }
+
+
