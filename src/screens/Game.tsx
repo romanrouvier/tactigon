@@ -80,7 +80,7 @@ export default function Game() {
 
     // If assets are already cached, onLoad never fires — use a hard timeout fallback
     let hardTimeout: ReturnType<typeof setTimeout>;
-    const raf = requestAnimationFrame(() => { hardTimeout = setTimeout(done, 15_000); });
+    const raf = requestAnimationFrame(() => { hardTimeout = setTimeout(done, 5_000); });
 
     return () => {
       cancelAnimationFrame(raf);
@@ -102,9 +102,10 @@ export default function Game() {
   const currentPlayerRef = useRef(gameState.currentPlayer);
   currentPlayerRef.current = gameState.currentPlayer;
 
-  // Countdown: tick once per second, decrement active player's clock
+  // Countdown: tick once per second, decrement active player's clock.
+  // Paused while isLoaded is false so the loading screen doesn't eat turn time.
   useEffect(() => {
-    if (timePerPlayer === 0 || gameState.winner) return;
+    if (timePerPlayer === 0 || gameState.winner || !isLoaded) return;
     const id = setInterval(() => {
       setTimers(prev => {
         const pid = currentPlayerRef.current;
@@ -113,7 +114,7 @@ export default function Game() {
       });
     }, 1000);
     return () => clearInterval(id);
-  }, [timePerPlayer, gameState.winner]);
+  }, [timePerPlayer, gameState.winner, isLoaded]);
 
   // When a player's clock hits 0, they lose
   const timedOutPlayer = timePerPlayer > 0
