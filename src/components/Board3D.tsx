@@ -7,7 +7,7 @@
  */
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Component, Suspense, useEffect, useMemo, useRef, type ReactNode } from 'react';
-import { OrbitControls, useGLTF, useAnimations } from '@react-three/drei';
+import { OrbitControls, useGLTF, useAnimations, Environment } from '@react-three/drei';
 import * as THREE from 'three';
 import type { BoardState, Faction, FactionPiecePattern, Move, Piece } from '../game/types';
 
@@ -18,9 +18,9 @@ const WALL_H = 0.22;   // wall slab height
 const PIECE_Y = TILE_H; // base Y for pieces
 
 // ─── Palette ──────────────────────────────────────────────────────────────────
-const C_TILE_LIGHT = '#f2f4f8';   // bright white-blue marble
-const C_TILE_DARK  = '#dde2ec';   // slightly cooler square
-const C_WALL       = '#b8c0cc';   // medium-gray wall slab
+const C_TILE_LIGHT = '#e8e8d0';   // warm ivory / cream
+const C_TILE_DARK  = '#3d7048';   // forest green
+const C_WALL       = '#2a5c30';   // dark green wall slab
 const C_LEGAL_EM   = '#0a6020';
 const C_CAPTURE_EM = '#6a1008';
 const C_DOT        = '#22cc44';
@@ -28,8 +28,8 @@ const C_DOT_EM     = '#10a030';
 const C_RING       = '#cc2010';
 const C_RING_EM    = '#991008';
 
-// Background colour — light blue-white sky
-const BG_COLOR = '#ddeeff';
+// Background colour — warm forest canopy
+const BG_COLOR = '#8ab868';
 
 // ─── Error boundary (contains 3D render crashes) ─────────────────────────────
 interface EBState { hasError: boolean }
@@ -454,6 +454,57 @@ function Tile({
   );
 }
 
+// ─── Forest tree ─────────────────────────────────────────────────────────────
+function ForestTree({ x, z, h = 3.5, r = 0.5 }: { x: number; z: number; h?: number; r?: number }) {
+  return (
+    <group position={[x, 0, z]}>
+      {/* Trunk */}
+      <mesh position={[0, h * 0.28, 0]} castShadow receiveShadow>
+        <cylinderGeometry args={[h * 0.052, h * 0.075, h * 0.56, 7]} />
+        <meshStandardMaterial color="#7a5230" roughness={0.96} metalness={0} />
+      </mesh>
+      {/* Lower canopy */}
+      <mesh position={[r * 0.12, h * 0.70, r * 0.16]} castShadow>
+        <sphereGeometry args={[h * 0.37, 9, 7]} />
+        <meshStandardMaterial color="#1e5c22" roughness={0.88} metalness={0} />
+      </mesh>
+      {/* Mid canopy */}
+      <mesh position={[-r * 0.14, h * 0.88, -r * 0.10]} castShadow>
+        <sphereGeometry args={[h * 0.30, 9, 7]} />
+        <meshStandardMaterial color="#2a7030" roughness={0.88} metalness={0} />
+      </mesh>
+      {/* Top canopy */}
+      <mesh position={[r * 0.06, h * 1.04, r * 0.08]} castShadow>
+        <sphereGeometry args={[h * 0.23, 8, 6]} />
+        <meshStandardMaterial color="#3a8840" roughness={0.88} metalness={0} />
+      </mesh>
+    </group>
+  );
+}
+
+// ─── Daisy flower ─────────────────────────────────────────────────────────────
+function Daisy({ x, z }: { x: number; z: number }) {
+  return (
+    <group position={[x, 0, z]}>
+      {/* Stem */}
+      <mesh position={[0, 0.10, 0]}>
+        <cylinderGeometry args={[0.012, 0.016, 0.20, 5]} />
+        <meshStandardMaterial color="#3a6b30" roughness={0.9} />
+      </mesh>
+      {/* White petals */}
+      <mesh position={[0, 0.22, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <circleGeometry args={[0.075, 14]} />
+        <meshStandardMaterial color="#f5f5f0" roughness={0.7} side={THREE.DoubleSide} />
+      </mesh>
+      {/* Yellow centre */}
+      <mesh position={[0, 0.233, 0]}>
+        <sphereGeometry args={[0.026, 8, 6]} />
+        <meshStandardMaterial color="#f5c020" emissive="#e8a800" emissiveIntensity={0.5} roughness={0.5} />
+      </mesh>
+    </group>
+  );
+}
+
 // ─── Board scene ──────────────────────────────────────────────────────────────
 function BoardScene({
   gameState,
@@ -495,43 +546,84 @@ function BoardScene({
 
   return (
     <>
-      {/* ── Lighting (≤4 lights total) ── */}
-      {/* 1 — Ambient fill — bright daylight */}
-      <ambientLight color="#e8f0ff" intensity={4.0} />
-      {/* 2 — Primary shadow-casting key light */}
+      {/* ── Forest IBL — provides ambient reflections on all materials ── */}
+      <Suspense fallback={null}>
+        <Environment preset="forest" background={false} />
+      </Suspense>
+
+      {/* ── Lighting ── */}
+      {/* Warm forest ambient */}
+      <ambientLight color="#b8d890" intensity={2.8} />
+      {/* Sun — warm golden, filtering through canopy from top-right */}
       <directionalLight
-        position={[6, 14, 10]}
-        color="#ffffff"
-        intensity={3.5}
+        position={[9, 18, 11]}
+        color="#fff8d0"
+        intensity={2.6}
         castShadow
         shadow-mapSize={[2048, 2048]}
         shadow-camera-far={60}
-        shadow-camera-left={-18}
-        shadow-camera-right={18}
-        shadow-camera-top={18}
-        shadow-camera-bottom={-18}
+        shadow-camera-left={-20}
+        shadow-camera-right={20}
+        shadow-camera-top={20}
+        shadow-camera-bottom={-20}
         shadow-bias={-0.0005}
       />
-      {/* 3 & 4 — Per-player faction colour accent lights (max 2) */}
+      {/* Soft foliage bounce — fills shadows from the left */}
+      <directionalLight position={[-8, 5, -7]} color="#90c870" intensity={0.65} />
+      {/* Per-player faction accent lights */}
       {playerLights.map(l =>
         l ? (
           <pointLight
             key={l.pid}
             position={[l.x, 1.8, l.z]}
             color={l.color}
-            intensity={1.5}
+            intensity={1.2}
             distance={5}
             decay={2}
           />
         ) : null
       )}
 
+      {/* ── Wide grass ground ── */}
+      <mesh position={[0, -0.09, 0]} receiveShadow>
+        <boxGeometry args={[cols * 4.5, 0.18, rows * 4.5]} />
+        <meshStandardMaterial color="#5a9e4a" roughness={0.98} metalness={0} />
+      </mesh>
+
+      {/* ── Forest trees around the board ── */}
+      <ForestTree x={-9}   z={-10}  h={5.0} r={0.8} />
+      <ForestTree x={ 9}   z={-11}  h={5.5} r={0.6} />
+      <ForestTree x={-11}  z={-1}   h={4.5} r={1.0} />
+      <ForestTree x={ 11}  z={ 0}   h={5.0} r={0.7} />
+      <ForestTree x={-8}   z={ 9}   h={4.0} r={0.9} />
+      <ForestTree x={ 8}   z={ 10}  h={4.5} r={0.5} />
+      <ForestTree x={ 0}   z={-12}  h={6.0} r={0.3} />
+      <ForestTree x={-13}  z={ 5}   h={4.8} r={0.6} />
+      <ForestTree x={ 13}  z={ 4}   h={5.2} r={0.4} />
+
+      {/* ── Daisies scattered in the grass ── */}
+      <Daisy x={-5.0} z={-3.5} />
+      <Daisy x={-5.5} z={ 1.5} />
+      <Daisy x={ 5.0} z={-4.0} />
+      <Daisy x={ 5.5} z={ 2.0} />
+      <Daisy x={-3.5} z={ 5.5} />
+      <Daisy x={ 4.0} z={ 6.0} />
+      <Daisy x={ 0.5} z={-5.5} />
+      <Daisy x={-4.5} z={ 4.0} />
+      <Daisy x={ 3.0} z={-5.0} />
+      <Daisy x={-1.5} z={ 6.5} />
+
       {/* ── Board group ── */}
       <group position={[ox, 0, oz]}>
-        {/* Stone plinth beneath tiles */}
-        <mesh position={[(cols - 1) / 2, -0.06, (rows - 1) / 2]} receiveShadow>
-          <boxGeometry args={[cols + 0.6, 0.12, rows + 0.6]} />
-          <meshStandardMaterial color="#cdd4de" roughness={0.88} metalness={0.04} />
+        {/* Green wooden board frame */}
+        <mesh position={[(cols - 1) / 2, TILE_H * 0.5, (rows - 1) / 2]} receiveShadow>
+          <boxGeometry args={[cols + 0.5, TILE_H, rows + 0.5]} />
+          <meshStandardMaterial color="#2d5c1e" roughness={0.85} metalness={0} />
+        </mesh>
+        {/* Raised grass-green board base */}
+        <mesh position={[(cols - 1) / 2, -0.05, (rows - 1) / 2]} receiveShadow>
+          <boxGeometry args={[cols + 0.7, 0.10, rows + 0.7]} />
+          <meshStandardMaterial color="#3d7040" roughness={0.95} metalness={0} />
         </mesh>
 
         {Array.from({ length: rows }, (_, y) =>
@@ -607,7 +699,7 @@ export default function Board3D({ gameState, selectedPieceId, legalMoves, onCell
         camera={{ position: [0, camY, camZ], fov: 46, near: 0.1, far: 120 }}
         style={{ width: '100%', height: '100%', display: 'block', background: BG_COLOR }}
       >
-        <fog attach="fog" args={[BG_COLOR, 25, 65]} />
+        <fog attach="fog" args={[BG_COLOR, 14, 42]} />
 
         <OrbitControls
           makeDefault
