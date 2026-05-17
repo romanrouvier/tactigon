@@ -31,9 +31,6 @@ const C_RING_EM    = '#991008';
 // Background colour — light blue-white sky
 const BG_COLOR = '#ddeeff';
 
-// ─── Mobile detection (lower DPR to halve fill rate on small GPUs) ───────────
-const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-
 // ─── Error boundary (contains 3D render crashes) ─────────────────────────────
 interface EBState { hasError: boolean }
 class Board3DErrorBoundary extends Component<{ children: ReactNode; fallback: ReactNode }, EBState> {
@@ -507,7 +504,7 @@ function BoardScene({
         color="#ffffff"
         intensity={3.5}
         castShadow
-        shadow-mapSize={isMobile ? [1024, 1024] : [2048, 2048]}
+        shadow-mapSize={[2048, 2048]}
         shadow-camera-far={60}
         shadow-camera-left={-18}
         shadow-camera-right={18}
@@ -605,8 +602,8 @@ export default function Board3D({ gameState, selectedPieceId, legalMoves, onCell
     >
       <Canvas
         shadows
-        dpr={isMobile ? 1 : [1, 2]}
-        gl={{ antialias: !isMobile, alpha: false }}
+        dpr={[1, 2]}
+        gl={{ antialias: true, alpha: false, powerPreference: 'high-performance' }}
         camera={{ position: [0, camY, camZ], fov: 46, near: 0.1, far: 120 }}
         style={{ width: '100%', height: '100%', display: 'block', background: BG_COLOR }}
       >
